@@ -84,7 +84,7 @@ $dashboard-banner-chart-axis-font-color-alt: #333;
   display: grid;
   grid-template-columns: repeat(var(--numChartData), 0.9fr);
   padding-bottom: 12px;
-  padding-left:20px;
+  margin-top: 100px;
 
   .dashboard-banner-chart-legend-item {
     padding-bottom: 3px;
