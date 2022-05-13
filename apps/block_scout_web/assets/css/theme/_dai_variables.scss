@@ -1,7 +1,7 @@
 // general
-$primary: #17314f;
-$secondary: #15bba6;
-$tertiary: #93d7ff;
+$primary: #47a9f2;
+$secondary: #47a9f2;
+$tertiary: white;
 $additional-font: #fff;
 
 // footer
@@ -145,3 +145,40 @@ $dark-tertiary: #5a77ff;
       }
     }
   }
+
+
+  .dashboard-banner-chart-legend .dashboard-banner-chart-legend-item:nth-child(2):before {
+    background-color: white !important;
+  }
+  .dashboard-banner-chart-legend .dashboard-banner-chart-legend-item:nth-child(3):before {
+    background-color: white !important;
+  }
+  .dashboard-banner-chart-legend .dashboard-banner-chart-legend-item:nth-child(4):before {
+    background-color: white !important;
+  }
+
+
+  .dashboard-banner-chart-legend .dashboard-banner-chart-legend-item:before{
+    background-color: white !important;
+  }
+
+  .footer-list ul li:before{
+    background-color: white !important;
+  }
+
+  .tile.tile-type-transaction .tile-label, .tile.tile-type-transaction .tile-transaction-type-block a {
+    color: #47a9f2 !important;
+  }
+
+
+  .tile.tile-type-transaction .tile-transaction-type-block {
+    background-color: rgba(0,123,255,.1) !important;
+    border-bottom: 1px solid #47a9f2 !important;
+    border-right: 1px solid #47a9f2 !important;
+    border-top: 1px solid #47a9f2 !important;
+    color: #47a9f2 !important;
+}
+
+.navbar.navbar-primary .navbar-nav .nav-link:before {
+  background-color: #47a9f2 !important;
+}

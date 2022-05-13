@@ -7,12 +7,12 @@
     padding: 1.25rem 2.5rem;
 
     &:hover {
-      color: $primary;
+      color:  #47a9f2;
     }
 
     &.active {
-      background-color: $primary;
-      border-color: $primary;
+      background-color: #47a9f2;
+      border-color: #47a9f2;
       color: $white;
     }
 
@@ -23,17 +23,23 @@
 }
 
 .nav-tabs .nav-item.show .nav-link {
-  background-color: darken($primary, 10%);
-  border-color: darken($primary, 10%);
+  background-color: lighten(#47a9f2, 10%);
+  border-color: lighten(#47a9f2, 10%);
   color: $white;
 }
 
 .api-doc-tab {
   padding-bottom: 5px;
-  color: $primary !important;
+  color: #47a9f2 !important;
   background-color: transparent !important;
 }
 
 .api-doc-tab.active {
-  border-bottom: 1px solid $primary;
+  border-bottom: 1px solid #47a9f2;
 }
+
+.dark-mode-changer{
+  display: none;
+} 
+
+

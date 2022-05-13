@@ -244,6 +244,8 @@ $navbar-logo-width: auto !default;
 .navbar-logo {
   height: $navbar-logo-height;
   width: $navbar-logo-width;
+  padding-left: 70px;
+  filter: brightness(1) invert(1);
 }
 
 .logo-text {
