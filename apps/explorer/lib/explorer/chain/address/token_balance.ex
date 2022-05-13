@@ -23,7 +23,7 @@ defmodule Explorer.Chain.Address.TokenBalance do
    *  `token_contract_address_hash` - The contract address hash foreign key.
    *  `block_number` - The block's number that the transfer took place.
    *  `value` - The value that's represents the balance.
-   *  `token_id` - The token_id of the transferred token (applicable for ERC-1155 and ERC-721 tokens)
+   *  `token_id` - The token_id of the transferred token (applicable for ZEN-1155 and ZEN-721 tokens)
    *  `token_type` - The type of the token
   """
   @type t :: %__MODULE__{
@@ -46,7 +46,11 @@ defmodule Explorer.Chain.Address.TokenBalance do
     field(:token_id, :decimal)
     field(:token_type, :string)
 
-    belongs_to(:address, Address, foreign_key: :address_hash, references: :hash, type: Hash.Address)
+    belongs_to(:address, Address,
+      foreign_key: :address_hash,
+      references: :hash,
+      type: Hash.Address
+    )
 
     belongs_to(
       :token,
@@ -73,14 +77,16 @@ defmodule Explorer.Chain.Address.TokenBalance do
     |> unique_constraint(:block_number, name: :token_balances_address_hash_block_number_index)
   end
 
-  {:ok, burn_address_hash} = Chain.string_to_address_hash("0x0000000000000000000000000000000000000000")
+  {:ok, burn_address_hash} =
+    Chain.string_to_address_hash("0x0000000000000000000000000000000000000000")
+
   @burn_address_hash burn_address_hash
 
   @doc """
   Builds an `Ecto.Query` to fetch the unfetched token balances.
 
   Unfetched token balances are the ones that have the column `value_fetched_at` nil or the value is null. This query also
-  ignores the burn_address for tokens ERC-721 since the most tokens ERC-721 don't allow get the
+  ignores the burn_address for tokens ZEN-721 since the most tokens ZEN-721 don't allow get the
   balance for burn_address.
   """
   def unfetched_token_balances do
@@ -89,7 +95,8 @@ defmodule Explorer.Chain.Address.TokenBalance do
       join: t in Token,
       on: tb.token_contract_address_hash == t.contract_address_hash,
       where:
-        ((tb.address_hash != ^@burn_address_hash and t.type != "ERC-721") or t.type == "ERC-20" or t.type == "ERC-1155") and
+        ((tb.address_hash != ^@burn_address_hash and t.type != "ZEN-721") or t.type == "ZEN-20" or
+           t.type == "ZEN-1155") and
           (is_nil(tb.value_fetched_at) or is_nil(tb.value))
     )
   end

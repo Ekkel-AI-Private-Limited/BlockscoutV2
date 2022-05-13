@@ -8,7 +8,7 @@
 
     <div class="row">
       <div class="col-xs-12 col-lg-3">
-        <p class="footer-info-text">Zenith Chain is a digital peer to peer network that aims to implement a use case specific blockchain, designed to efficiently handle one single function: the transfer of assets from one party to another.</p>
+        <p class="footer-info-text" style="color:white;">Zenith Chain is a digital peer to peer network that aims to implement a use case specific blockchain, designed to efficiently handle one single function: the transfer of assets from one party to another.</p>
         <div class="footer-social-icons">
           <a href="https://github.com/blockscout/blockscout" rel="noreferrer" target="_blank" class="footer-social-icon" title='Github'>
             <div class="footer-social-icon-container fontawesome-icon github"></div>

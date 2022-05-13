@@ -23,14 +23,16 @@ defmodule Indexer.Fetcher.TokenBalanceTest do
       insert(:token_balance, value_fetched_at: DateTime.utc_now())
 
       assert TokenBalance.init([], &[&1 | &2], nil) == [
-               {address_hash_bytes, token_contract_address_hash_bytes, 1000, "ERC-20", nil, 0}
+               {address_hash_bytes, token_contract_address_hash_bytes, 1000, "ZEN-20", nil, 0}
              ]
     end
   end
 
   describe "run/3" do
     setup %{json_rpc_named_arguments: json_rpc_named_arguments} do
-      TokenBalance.Supervisor.Case.start_supervised!(json_rpc_named_arguments: json_rpc_named_arguments)
+      TokenBalance.Supervisor.Case.start_supervised!(
+        json_rpc_named_arguments: json_rpc_named_arguments
+      )
 
       :ok
     end
@@ -58,11 +60,15 @@ defmodule Indexer.Fetcher.TokenBalanceTest do
       )
 
       assert TokenBalance.run(
-               [{address_hash_bytes, token_contract_address_hash_bytes, block_number, "ERC-20", nil, 0}],
+               [
+                 {address_hash_bytes, token_contract_address_hash_bytes, block_number, "ZEN-20",
+                  nil, 0}
+               ],
                nil
              ) == :ok
 
-      token_balance_updated = Explorer.Repo.get_by(Address.TokenBalance, address_hash: address_hash)
+      token_balance_updated =
+        Explorer.Repo.get_by(Address.TokenBalance, address_hash: address_hash)
 
       assert token_balance_updated.value == Decimal.new(1_000_000_000_000_000_000_000_000)
       assert token_balance_updated.value_fetched_at != nil
@@ -106,11 +112,15 @@ defmodule Indexer.Fetcher.TokenBalanceTest do
       )
 
       assert TokenBalance.run(
-               [{address_hash_bytes, token_contract_address_hash_bytes, block_number, "ERC-20", nil, 0}],
+               [
+                 {address_hash_bytes, token_contract_address_hash_bytes, block_number, "ZEN-20",
+                  nil, 0}
+               ],
                nil
              ) == :ok
 
-      token_balance_updated = Explorer.Repo.get_by(Address.TokenBalance, address_hash: address_hash)
+      token_balance_updated =
+        Explorer.Repo.get_by(Address.TokenBalance, address_hash: address_hash)
 
       assert token_balance_updated.value == Decimal.new(1_000_000_000_000_000_000_000_000)
       assert token_balance_updated.value_fetched_at != nil
@@ -128,7 +138,7 @@ defmodule Indexer.Fetcher.TokenBalanceTest do
         {
           token_balance_a.address_hash.bytes,
           token_balance_a.token_contract_address_hash.bytes,
-          "ERC-20",
+          "ZEN-20",
           nil,
           token_balance_a.block_number,
           # this token balance must be ignored
@@ -137,7 +147,7 @@ defmodule Indexer.Fetcher.TokenBalanceTest do
         {
           token_balance_b.address_hash.bytes,
           token_balance_b.token_contract_address_hash.bytes,
-          "ERC-20",
+          "ZEN-20",
           nil,
           token_balance_b.block_number,
           # this token balance still have to be retried
@@ -172,8 +182,10 @@ defmodule Indexer.Fetcher.TokenBalanceTest do
 
       assert TokenBalance.run(
                [
-                 {address_hash_bytes, token_contract_address_hash_bytes, block_number, "ERC-20", nil, 0},
-                 {address_hash_bytes, token_contract_address_hash_bytes, block_number, "ERC-20", nil, 0}
+                 {address_hash_bytes, token_contract_address_hash_bytes, block_number, "ZEN-20",
+                  nil, 0},
+                 {address_hash_bytes, token_contract_address_hash_bytes, block_number, "ZEN-20",
+                  nil, 0}
                ],
                nil
              ) == :ok
@@ -216,17 +228,19 @@ defmodule Indexer.Fetcher.TokenBalanceTest do
           address_hash: "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
           block_number: 19999,
           token_contract_address_hash: to_string(contract.contract_address_hash),
-          token_type: "ERC-20",
+          token_type: "ZEN-20",
           token_id: nil
         }
       ]
 
-      {:ok, address_hash} = Explorer.Chain.string_to_address_hash("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+      {:ok, address_hash} =
+        Explorer.Chain.string_to_address_hash("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+
       assert TokenBalance.import_token_balances(token_balances_params) == :ok
       assert {:ok, _} = Explorer.Chain.hash_to_address(address_hash)
     end
 
-    test "import the token balances and return :ok when there are multiple balances for the same address on the batch (ERC-20)" do
+    test "import the token balances and return :ok when there are multiple balances for the same address on the batch (ZEN-20)" do
       contract = insert(:token)
       contract2 = insert(:token)
       insert(:block, number: 19999)
@@ -237,21 +251,21 @@ defmodule Indexer.Fetcher.TokenBalanceTest do
           block_number: 19999,
           token_contract_address_hash: to_string(contract.contract_address_hash),
           token_id: nil,
-          token_type: "ERC-20"
+          token_type: "ZEN-20"
         },
         %{
           address_hash: "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
           block_number: 19999,
           token_contract_address_hash: to_string(contract2.contract_address_hash),
           token_id: nil,
-          token_type: "ERC-20"
+          token_type: "ZEN-20"
         }
       ]
 
       assert TokenBalance.import_token_balances(token_balances_params) == :ok
     end
 
-    test "import the token balances and return :ok when there are multiple balances for the same address on the batch (ERC-1155)" do
+    test "import the token balances and return :ok when there are multiple balances for the same address on the batch (ZEN-1155)" do
       contract = insert(:token)
       contract2 = insert(:token)
       insert(:block, number: 19999)
@@ -262,14 +276,14 @@ defmodule Indexer.Fetcher.TokenBalanceTest do
           block_number: 19999,
           token_contract_address_hash: to_string(contract.contract_address_hash),
           token_id: 11,
-          token_type: "ERC-20"
+          token_type: "ZEN-20"
         },
         %{
           address_hash: "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
           block_number: 19999,
           token_contract_address_hash: to_string(contract2.contract_address_hash),
           token_id: 11,
-          token_type: "ERC-1155"
+          token_type: "ZEN-1155"
         }
       ]
 

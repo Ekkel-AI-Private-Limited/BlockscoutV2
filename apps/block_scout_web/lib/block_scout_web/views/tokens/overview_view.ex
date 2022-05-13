@@ -43,8 +43,8 @@ defmodule BlockScoutWeb.Tokens.OverviewView do
   defp tab_name(["read-contract"]), do: gettext("Read Contract")
   defp tab_name(["inventory"]), do: gettext("Inventory")
 
-  def display_inventory?(%Token{type: "ERC-721"}), do: true
-  def display_inventory?(%Token{type: "ERC-1155"}), do: true
+  def display_inventory?(%Token{type: "ZEN-721"}), do: true
+  def display_inventory?(%Token{type: "ZEN-1155"}), do: true
   def display_inventory?(_), do: false
 
   def smart_contract_with_read_only_functions?(
@@ -53,9 +53,14 @@ defmodule BlockScoutWeb.Tokens.OverviewView do
     Enum.any?(token.contract_address.smart_contract.abi, &Helper.queriable_method?(&1))
   end
 
-  def smart_contract_with_read_only_functions?(%Token{contract_address: %Address{smart_contract: nil}}), do: false
+  def smart_contract_with_read_only_functions?(%Token{
+        contract_address: %Address{smart_contract: nil}
+      }),
+      do: false
 
-  def smart_contract_is_proxy?(%Token{contract_address: %Address{smart_contract: %SmartContract{}} = address}) do
+  def smart_contract_is_proxy?(%Token{
+        contract_address: %Address{smart_contract: %SmartContract{}} = address
+      }) do
     Chain.proxy_contract?(address.hash, address.smart_contract.abi)
   end
 
@@ -70,7 +75,8 @@ defmodule BlockScoutWeb.Tokens.OverviewView do
     )
   end
 
-  def smart_contract_with_write_functions?(%Token{contract_address: %Address{smart_contract: nil}}), do: false
+  def smart_contract_with_write_functions?(%Token{contract_address: %Address{smart_contract: nil}}),
+      do: false
 
   @doc """
   Get the total value of the token supply in USD.
@@ -94,7 +100,8 @@ defmodule BlockScoutWeb.Tokens.OverviewView do
       token.foreign_token_contract_address_hash.bytes
       |> Base.encode16(case: :lower)
 
-    foreign_token_contract_address_hash_string = "0x" <> foreign_token_contract_address_hash_string_no_prefix
+    foreign_token_contract_address_hash_string =
+      "0x" <> foreign_token_contract_address_hash_string_no_prefix
 
     base_token_explorer_link <> foreign_token_contract_address_hash_string
   end

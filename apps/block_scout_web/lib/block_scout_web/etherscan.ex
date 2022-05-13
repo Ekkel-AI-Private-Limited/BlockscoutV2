@@ -185,15 +185,15 @@ defmodule BlockScoutWeb.Etherscan do
         "name" => "Example Token",
         "decimals" => "18",
         "symbol" => "ET",
-        "type" => "ERC-20"
+        "type" => "ZEN-20"
       },
       %{
         "balance" => "1",
         "contractAddress" => "0x0000000000000000000000000000000000000001",
-        "name" => "Example ERC-721 Token",
+        "name" => "Example ZEN-721 Token",
         "decimals" => "18",
         "symbol" => "ET7",
-        "type" => "ERC-721"
+        "type" => "ZEN-721"
       }
     ]
   }
@@ -266,7 +266,7 @@ defmodule BlockScoutWeb.Etherscan do
       "name" => "Example Token",
       "symbol" => "ET",
       "totalSupply" => "1000000000",
-      "type" => "ERC-20"
+      "type" => "ZEN-20"
     }
   }
 
@@ -363,7 +363,8 @@ defmodule BlockScoutWeb.Etherscan do
 
   @stats_totalfees_example_value_error %{
     "status" => "0",
-    "message" => "An incorrect input date provided. It should be in ISO 8601 format (yyyy-mm-dd).",
+    "message" =>
+      "An incorrect input date provided. It should be in ISO 8601 format (yyyy-mm-dd).",
     "result" => nil
   }
 
@@ -694,7 +695,8 @@ defmodule BlockScoutWeb.Etherscan do
 
   @confirmation_type %{
     type: "confirmations",
-    definition: "A number equal to the current block height minus the transaction's block-number.",
+    definition:
+      "A number equal to the current block height minus the transaction's block-number.",
     example: ~s("6005998")
   }
 
@@ -798,7 +800,8 @@ defmodule BlockScoutWeb.Etherscan do
       },
       homeUsdValue: %{
         type: "value",
-        definition: "Total supply of the token on the home side (where token was bridged) in USD.",
+        definition:
+          "Total supply of the token on the home side (where token was bridged) in USD.",
         example: ~s("6638727.472651464170990256943")
       }
     }
@@ -825,7 +828,8 @@ defmodule BlockScoutWeb.Etherscan do
       hash: @transaction_hash_type,
       nonce: %{
         type: "nonce",
-        definition: "A scalar value equal to the number of transactions sent by the sender prior to this transaction.",
+        definition:
+          "A scalar value equal to the number of transactions sent by the sender prior to this transaction.",
         example: ~s("0")
       },
       blockHash: %{
@@ -911,7 +915,8 @@ defmodule BlockScoutWeb.Etherscan do
       hash: @transaction_hash_type,
       nonce: %{
         type: "nonce",
-        definition: "A scalar value equal to the number of transactions sent by the sender prior to this transaction.",
+        definition:
+          "A scalar value equal to the number of transactions sent by the sender prior to this transaction.",
         example: ~s("0")
       },
       blockHash: %{
@@ -1000,8 +1005,11 @@ defmodule BlockScoutWeb.Etherscan do
       decimals: @token_decimal_type,
       type: %{
         type: "token type",
-        enum: ~s(["ERC-20", "ERC-721"]),
-        enum_interpretation: %{"ERC-20" => "ERC-20 token standard", "ERC-721" => "ERC-721 token standard"}
+        enum: ~s(["ZEN-20", "ZEN-721"]),
+        enum_interpretation: %{
+          "ZEN-20" => "ZEN-20 token standard",
+          "ZEN-721" => "ZEN-721 token standard"
+        }
       },
       cataloged: %{
         type: "boolean",
@@ -1115,7 +1123,8 @@ defmodule BlockScoutWeb.Etherscan do
       "status" => %{
         type: "string",
         definition: "Current status of the verification attempt",
-        example: "`Pending in queue` | `Pass - Verified` | `Fail - Unable to verify` | `Unknown UID`"
+        example:
+          "`Pending in queue` | `Pass - Verified` | `Fail - Unable to verify` | `Unknown UID`"
       }
     }
   }
@@ -1161,14 +1170,21 @@ defmodule BlockScoutWeb.Etherscan do
 
   @contract_decompiler_version_type %{
     type: "decompiler version",
-    definition: "When decompiled source code is present, the decompiler version with which it was generated.",
+    definition:
+      "When decompiled source code is present, the decompiler version with which it was generated.",
     example: "decompiler.version"
   }
 
   @contract_with_sourcecode_model @contract_model
                                   |> put_in([:fields, "SourceCode"], @contract_source_code_type)
-                                  |> put_in([:fields, "DecompiledSourceCode"], @contract_decompiled_source_code_type)
-                                  |> put_in([:fields, "DecompilerVersion"], @contract_decompiler_version_type)
+                                  |> put_in(
+                                    [:fields, "DecompiledSourceCode"],
+                                    @contract_decompiled_source_code_type
+                                  )
+                                  |> put_in(
+                                    [:fields, "DecompilerVersion"],
+                                    @contract_decompiler_version_type
+                                  )
 
   @transaction_receipt_status_model %{
     name: "TransactionReceiptStatus",
@@ -1550,7 +1566,8 @@ defmodule BlockScoutWeb.Etherscan do
         key: "address",
         placeholder: "addressHash",
         type: "string",
-        description: "A 160-bit code used for identifying accounts. An address hash or transaction hash is required."
+        description:
+          "A 160-bit code used for identifying accounts. An address hash or transaction hash is required."
       },
       %{
         key: "sort",
@@ -1853,7 +1870,8 @@ defmodule BlockScoutWeb.Etherscan do
 
   @logs_getlogs_action %{
     name: "getLogs",
-    description: "Get event logs for an address and/or topics. Up to a maximum of 1,000 event logs.",
+    description:
+      "Get event logs for an address and/or topics. Up to a maximum of 1,000 event logs.",
     required_params: [
       %{
         key: "fromBlock",
@@ -1873,7 +1891,8 @@ defmodule BlockScoutWeb.Etherscan do
         key: "address",
         placeholder: "addressHash",
         type: "string",
-        description: "A 160-bit code used for identifying contracts. An address and/or topic{x} is required."
+        description:
+          "A 160-bit code used for identifying contracts. An address and/or topic{x} is required."
       },
       %{
         key: "topic0",
@@ -1969,8 +1988,8 @@ defmodule BlockScoutWeb.Etherscan do
   @token_gettoken_action %{
     name: "getToken",
     description:
-      "Get <a href='https://github.com/ethereum/EIPs/issues/20'>ERC-20</a> " <>
-        "or <a href='https://github.com/ethereum/EIPs/issues/721'>ERC-721</a> token by contract address.",
+      "Get <a href='https://github.com/ethereum/EIPs/issues/20'>ZEN-20</a> " <>
+        "or <a href='https://github.com/ethereum/EIPs/issues/721'>ZEN-721</a> token by contract address.",
     required_params: [
       %{
         key: "contractaddress",
@@ -2063,7 +2082,8 @@ defmodule BlockScoutWeb.Etherscan do
       %{
         key: "chainid",
         type: "integer",
-        description: "A nonnegative integer that represents the chain id, where original token exists."
+        description:
+          "A nonnegative integer that represents the chain id, where original token exists."
       },
       %{
         key: "page",
@@ -2101,8 +2121,8 @@ defmodule BlockScoutWeb.Etherscan do
   @stats_tokensupply_action %{
     name: "tokensupply",
     description:
-      "Get <a href='https://github.com/ethereum/EIPs/issues/20'>ERC-20</a> or " <>
-        "<a href='https://github.com/ethereum/EIPs/issues/721'>ERC-721</a> " <>
+      "Get <a href='https://github.com/ethereum/EIPs/issues/20'>ZEN-20</a> or " <>
+        "<a href='https://github.com/ethereum/EIPs/issues/721'>ZEN-721</a> " <>
         " token total supply by contract address.",
     required_params: [
       %{
@@ -2351,13 +2371,15 @@ defmodule BlockScoutWeb.Etherscan do
         key: "timestamp",
         placeholder: "blockTimestamp",
         type: "integer",
-        description: "A nonnegative integer that represents the block timestamp (Unix timestamp in seconds)."
+        description:
+          "A nonnegative integer that represents the block timestamp (Unix timestamp in seconds)."
       },
       %{
         key: "closest",
         placeholder: "before/after",
         type: "string",
-        description: "Direction to find the closest block number to given timestamp. Available values: before/after."
+        description:
+          "Direction to find the closest block number to given timestamp. Available values: before/after."
       }
     ],
     optional_params: [],
@@ -2790,7 +2812,8 @@ defmodule BlockScoutWeb.Etherscan do
 
   @contract_checkverifystatus_action %{
     name: "checkverifystatus",
-    description: "Return status of the verification attempt (works in addition to verifysourcecode method)",
+    description:
+      "Return status of the verification attempt (works in addition to verifysourcecode method)",
     required_params: [
       %{
         key: "guid",
@@ -2813,7 +2836,8 @@ defmodule BlockScoutWeb.Etherscan do
 
   @contract_getabi_action %{
     name: "getabi",
-    description: "Get ABI for verified contract. Also available through a GraphQL 'addresses' query.",
+    description:
+      "Get ABI for verified contract. Also available through a GraphQL 'addresses' query.",
     required_params: [
       %{
         key: "address",
@@ -2850,7 +2874,8 @@ defmodule BlockScoutWeb.Etherscan do
 
   @contract_getsourcecode_action %{
     name: "getsourcecode",
-    description: "Get contract source code for verified contract. Also available through a GraphQL 'addresses' query.",
+    description:
+      "Get contract source code for verified contract. Also available through a GraphQL 'addresses' query.",
     required_params: [
       %{
         key: "address",
@@ -2900,7 +2925,8 @@ defmodule BlockScoutWeb.Etherscan do
       %{
         key: "index",
         type: "integer",
-        description: "A nonnegative integer that represents the log index to be used for pagination."
+        description:
+          "A nonnegative integer that represents the log index to be used for pagination."
       }
     ],
     responses: [
@@ -2930,7 +2956,8 @@ defmodule BlockScoutWeb.Etherscan do
 
   @transaction_gettxreceiptstatus_action %{
     name: "gettxreceiptstatus",
-    description: "Get transaction receipt status. Also available through a GraphQL 'transaction' query.",
+    description:
+      "Get transaction receipt status. Also available through a GraphQL 'transaction' query.",
     required_params: [
       %{
         key: "txhash",
@@ -2967,7 +2994,8 @@ defmodule BlockScoutWeb.Etherscan do
 
   @transaction_getstatus_action %{
     name: "getstatus",
-    description: "Get error status and error message. Also available through a GraphQL 'transaction' query.",
+    description:
+      "Get error status and error message. Also available through a GraphQL 'transaction' query.",
     required_params: [
       %{
         key: "txhash",
@@ -3047,7 +3075,11 @@ defmodule BlockScoutWeb.Etherscan do
 
   @block_module %{
     name: "block",
-    actions: [@block_getblockreward_action, @block_getblocknobytime_action, @block_eth_block_number_action]
+    actions: [
+      @block_getblockreward_action,
+      @block_getblocknobytime_action,
+      @block_eth_block_number_action
+    ]
   }
 
   @contract_module %{

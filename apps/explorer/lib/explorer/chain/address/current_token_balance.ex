@@ -23,7 +23,7 @@ defmodule Explorer.Chain.Address.CurrentTokenBalance do
    *  `token_contract_address_hash` - The contract address hash foreign key.
    *  `block_number` - The block's number that the transfer took place.
    *  `value` - The value that's represents the balance.
-   *  `token_id` - The token_id of the transferred token (applicable for ERC-1155 and ERC-721 tokens)
+   *  `token_id` - The token_id of the transferred token (applicable for ZEN-1155 and ZEN-721 tokens)
    *  `token_type` - The type of the token
   """
   @type t :: %__MODULE__{
@@ -51,7 +51,11 @@ defmodule Explorer.Chain.Address.CurrentTokenBalance do
     # A transient field for deriving token holder count deltas during address_current_token_balances upserts
     field(:old_value, :decimal)
 
-    belongs_to(:address, Address, foreign_key: :address_hash, references: :hash, type: Hash.Address)
+    belongs_to(:address, Address,
+      foreign_key: :address_hash,
+      references: :hash,
+      type: Hash.Address
+    )
 
     belongs_to(
       :token,
@@ -77,7 +81,9 @@ defmodule Explorer.Chain.Address.CurrentTokenBalance do
     |> foreign_key_constraint(:token_contract_address_hash)
   end
 
-  {:ok, burn_address_hash} = Chain.string_to_address_hash("0x0000000000000000000000000000000000000000")
+  {:ok, burn_address_hash} =
+    Chain.string_to_address_hash("0x0000000000000000000000000000000000000000")
+
   @burn_address_hash burn_address_hash
 
   @doc """
@@ -234,7 +240,7 @@ defmodule Explorer.Chain.Address.CurrentTokenBalance do
   end
 
   @doc """
-  Builds an `t:Ecto.Query.t/0` to fetch holders of the particular token_id in ERC-1155
+  Builds an `t:Ecto.Query.t/0` to fetch holders of the particular token_id in ZEN-1155
   """
   def token_holders_by_token_id_query(token_contract_address_hash, token_id) do
     from(

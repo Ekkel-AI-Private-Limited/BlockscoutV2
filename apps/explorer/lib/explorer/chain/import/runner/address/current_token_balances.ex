@@ -27,7 +27,10 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalances do
       when is_list(address_current_token_balances) do
     address_current_token_balances
     |> Stream.filter(fn %{value: value} -> valid_holder?(value) end)
-    |> Enum.reduce(%{}, fn %{token_contract_address_hash: token_contract_address_hash, address_hash: address_hash},
+    |> Enum.reduce(%{}, fn %{
+                             token_contract_address_hash: token_contract_address_hash,
+                             address_hash: address_hash
+                           },
                            acc_holder_address_hash_set_by_token_contract_address_hash ->
       updated_holder_address_hash_set =
         acc_holder_address_hash_set_by_token_contract_address_hash
@@ -42,7 +45,10 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalances do
     end)
   end
 
-  @spec token_holder_count_deltas(%{deleted: [current_token_balance], inserted: [current_token_balance]}) :: [
+  @spec token_holder_count_deltas(%{
+          deleted: [current_token_balance],
+          inserted: [current_token_balance]
+        }) :: [
           Tokens.token_holder_count_delta()
         ]
         when current_token_balance: %{
@@ -50,7 +56,8 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalances do
                token_contract_address_hash: Hash.Address.t(),
                value: Decimal.t()
              }
-  def token_holder_count_deltas(%{deleted: deleted, inserted: inserted}) when is_list(deleted) and is_list(inserted) do
+  def token_holder_count_deltas(%{deleted: deleted, inserted: inserted})
+      when is_list(deleted) and is_list(inserted) do
     deleted_holder_address_hash_set_by_token_contract_address_hash =
       to_holder_address_hash_set_by_token_contract_address_hash(deleted)
 
@@ -153,7 +160,11 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalances do
   # Assumes existence of old_value field with previous value or nil
   defp upserted_balances_to_holder_count_deltas(upserted_balances) do
     upserted_balances
-    |> Enum.map(fn %{token_contract_address_hash: contract_address_hash, value: value, old_value: old_value} ->
+    |> Enum.map(fn %{
+                     token_contract_address_hash: contract_address_hash,
+                     value: value,
+                     old_value: old_value
+                   } ->
       delta =
         cond do
           not valid_holder?(old_value) and valid_holder?(value) -> 1
@@ -178,8 +189,12 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalances do
            inserted_holder_address_hash_set_by_token_contract_address_hash,
          token_contract_address_hash: token_contract_address_hash
        }) do
-    case {deleted_holder_address_hash_set_by_token_contract_address_hash[token_contract_address_hash],
-          inserted_holder_address_hash_set_by_token_contract_address_hash[token_contract_address_hash]} do
+    case {deleted_holder_address_hash_set_by_token_contract_address_hash[
+            token_contract_address_hash
+          ],
+          inserted_holder_address_hash_set_by_token_contract_address_hash[
+            token_contract_address_hash
+          ]} do
       {deleted_holder_address_hash_set, nil} ->
         -1 * Enum.count(deleted_holder_address_hash_set)
 
@@ -211,12 +226,24 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalances do
   defp insert(repo, changes_list, %{timeout: timeout, timestamps: timestamps} = options)
        when is_atom(repo) and is_list(changes_list) do
     inserted_changes_list =
-      insert_changes_list_with_and_without_token_id(changes_list, repo, timestamps, timeout, options)
+      insert_changes_list_with_and_without_token_id(
+        changes_list,
+        repo,
+        timestamps,
+        timeout,
+        options
+      )
 
     {:ok, inserted_changes_list}
   end
 
-  def insert_changes_list_with_and_without_token_id(changes_list, repo, timestamps, timeout, options) do
+  def insert_changes_list_with_and_without_token_id(
+        changes_list,
+        repo,
+        timestamps,
+        timeout,
+        options
+      ) do
     on_conflict = Map.get_lazy(options, :on_conflict, &default_on_conflict/0)
 
     # Enforce CurrentTokenBalance ShareLocks order (see docs: sharelocks.md)
@@ -225,9 +252,10 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalances do
       changes_list_with_token_id: changes_list_with_token_id
     } =
       changes_list
-      |> Enum.reduce(%{changes_list_no_token_id: [], changes_list_with_token_id: []}, fn change, acc ->
+      |> Enum.reduce(%{changes_list_no_token_id: [], changes_list_with_token_id: []}, fn change,
+                                                                                         acc ->
         updated_change =
-          if Map.has_key?(change, :token_id) and Map.get(change, :token_type) == "ERC-1155" do
+          if Map.has_key?(change, :token_id) and Map.get(change, :token_type) == "ZEN-1155" do
             change
           else
             Map.put(change, :token_id, nil)
@@ -259,7 +287,9 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalances do
         {address_hash, token_contract_address_hash}
       end)
       |> Enum.map(fn {_, grouped_address_token_balances} ->
-        Enum.max_by(grouped_address_token_balances, fn %{block_number: block_number} -> block_number end)
+        Enum.max_by(grouped_address_token_balances, fn %{block_number: block_number} ->
+          block_number
+        end)
       end)
       |> Enum.sort_by(&{&1.token_contract_address_hash, &1.address_hash})
 
@@ -273,7 +303,9 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalances do
         {address_hash, token_contract_address_hash, token_id}
       end)
       |> Enum.map(fn {_, grouped_address_token_balances} ->
-        Enum.max_by(grouped_address_token_balances, fn %{block_number: block_number} -> block_number end)
+        Enum.max_by(grouped_address_token_balances, fn %{block_number: block_number} ->
+          block_number
+        end)
       end)
       |> Enum.sort_by(&{&1.token_contract_address_hash, &1.token_id, &1.address_hash})
 
@@ -282,7 +314,9 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalances do
         Import.insert_changes_list(
           repo,
           ordered_changes_list_no_token_id,
-          conflict_target: {:unsafe_fragment, ~s<(address_hash, token_contract_address_hash) WHERE token_id IS NULL>},
+          conflict_target:
+            {:unsafe_fragment,
+             ~s<(address_hash, token_contract_address_hash) WHERE token_id IS NULL>},
           on_conflict: on_conflict,
           for: CurrentTokenBalance,
           returning: true,
@@ -299,7 +333,8 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalances do
           repo,
           ordered_changes_list_with_token_id,
           conflict_target:
-            {:unsafe_fragment, ~s<(address_hash, token_contract_address_hash, token_id) WHERE token_id IS NOT NULL>},
+            {:unsafe_fragment,
+             ~s<(address_hash, token_contract_address_hash, token_id) WHERE token_id IS NOT NULL>},
           on_conflict: on_conflict,
           for: CurrentTokenBalance,
           returning: true,
@@ -323,8 +358,10 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalances do
           value_fetched_at: fragment("EXCLUDED.value_fetched_at"),
           old_value: current_token_balance.value,
           token_type: fragment("EXCLUDED.token_type"),
-          inserted_at: fragment("LEAST(EXCLUDED.inserted_at, ?)", current_token_balance.inserted_at),
-          updated_at: fragment("GREATEST(EXCLUDED.updated_at, ?)", current_token_balance.updated_at)
+          inserted_at:
+            fragment("LEAST(EXCLUDED.inserted_at, ?)", current_token_balance.inserted_at),
+          updated_at:
+            fragment("GREATEST(EXCLUDED.updated_at, ?)", current_token_balance.updated_at)
         ]
       ],
       where:
@@ -335,7 +372,9 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalances do
     )
   end
 
-  defp ordered_token_contract_address_hashes(holder_address_hash_set_by_token_contract_address_hash_list)
+  defp ordered_token_contract_address_hashes(
+         holder_address_hash_set_by_token_contract_address_hash_list
+       )
        when is_list(holder_address_hash_set_by_token_contract_address_hash_list) do
     holder_address_hash_set_by_token_contract_address_hash_list
     |> Enum.reduce(MapSet.new(), fn holder_address_hash_set_by_token_contract_address_hash, acc ->

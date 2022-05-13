@@ -16,7 +16,9 @@ defmodule Indexer.TokenBalancesTest do
 
   describe "fetch_token_balances_from_blockchain/2" do
     setup %{json_rpc_named_arguments: json_rpc_named_arguments} do
-      TokenBalance.Supervisor.Case.start_supervised!(json_rpc_named_arguments: json_rpc_named_arguments)
+      TokenBalance.Supervisor.Case.start_supervised!(
+        json_rpc_named_arguments: json_rpc_named_arguments
+      )
 
       :ok
     end
@@ -33,7 +35,7 @@ defmodule Indexer.TokenBalancesTest do
         address_hash: address_hash_string,
         block_number: 1_000,
         token_id: 11,
-        token_type: "ERC-20"
+        token_type: "ZEN-20"
       }
 
       get_balance_from_blockchain()
@@ -49,7 +51,7 @@ defmodule Indexer.TokenBalancesTest do
              } = List.first(result.fetched_token_balances)
     end
 
-    test "fetches balances of ERC-1155 tokens" do
+    test "fetches balances of ZEN-1155 tokens" do
       address = insert(:address, hash: "0x609991ca0ae39bc4eaf2669976237296d40c2f31")
 
       address_hash_string = Hash.to_string(address.hash)
@@ -66,7 +68,7 @@ defmodule Indexer.TokenBalancesTest do
           address_hash: address_hash_string,
           block_number: 1_000,
           token_id: 5,
-          token_type: "ERC-1155"
+          token_type: "ZEN-1155"
         }
       ]
 
@@ -118,49 +120,49 @@ defmodule Indexer.TokenBalancesTest do
           address_hash: address_1_hash_string,
           block_number: 1_000,
           token_id: nil,
-          token_type: "ERC-20"
+          token_type: "ZEN-20"
         },
         %{
           token_contract_address_hash: Hash.to_string(token_2.contract_address_hash),
           address_hash: address_2_hash_string,
           block_number: 1_000,
           token_id: nil,
-          token_type: "ERC-20"
+          token_type: "ZEN-20"
         },
         %{
           token_contract_address_hash: Hash.to_string(token_3.contract_address_hash),
           address_hash: address_2_hash_string,
           block_number: 1_000,
           token_id: 42,
-          token_type: "ERC-721"
+          token_type: "ZEN-721"
         },
         %{
           token_contract_address_hash: Hash.to_string(token_4.contract_address_hash),
           address_hash: address_2_hash_string,
           block_number: 1_000,
           token_id: 5,
-          token_type: "ERC-1155"
+          token_type: "ZEN-1155"
         },
         %{
           token_contract_address_hash: Hash.to_string(token_2.contract_address_hash),
           address_hash: Hash.to_string(token_2.contract_address_hash),
           block_number: 1_000,
           token_id: nil,
-          token_type: "ERC-20"
+          token_type: "ZEN-20"
         },
         %{
           token_contract_address_hash: Hash.to_string(token_2.contract_address_hash),
           address_hash: address_3_hash_string,
           block_number: 1_000,
           token_id: nil,
-          token_type: "ERC-20"
+          token_type: "ZEN-20"
         },
         %{
           token_contract_address_hash: Hash.to_string(token_2.contract_address_hash),
           address_hash: Hash.to_string(token_2.contract_address_hash),
           block_number: 1_000,
           token_id: nil,
-          token_type: "ERC-20"
+          token_type: "ZEN-20"
         }
       ]
 
@@ -236,7 +238,7 @@ defmodule Indexer.TokenBalancesTest do
           token_contract_address_hash: to_string(token.contract_address_hash),
           retries_count: 1,
           token_id: 11,
-          token_type: "ERC-20"
+          token_type: "ZEN-20"
         }
       ]
 
@@ -253,7 +255,7 @@ defmodule Indexer.TokenBalancesTest do
                       retries_count: 1,
                       token_contract_address_hash: to_string(token.contract_address_hash),
                       token_id: 11,
-                      token_type: "ERC-20",
+                      token_type: "ZEN-20",
                       value: nil,
                       value_fetched_at: nil
                     }
@@ -277,7 +279,9 @@ defmodule Indexer.TokenBalancesTest do
     end
 
     test "log when there is a token_balance param with errors" do
-      token_balance_params_with_error = Map.merge(build(:token_balance), %{error: "Error", retries_count: 1})
+      token_balance_params_with_error =
+        Map.merge(build(:token_balance), %{error: "Error", retries_count: 1})
+
       params = [token_balance_params_with_error]
 
       log_message_response =
@@ -342,7 +346,9 @@ defmodule Indexer.TokenBalancesTest do
       token_balances = MapSet.new([token_balance_a, token_balance_b])
       fetched_token_balances = MapSet.new([token_balance_a])
 
-      assert TokenBalances.unfetched_token_balances(token_balances, fetched_token_balances) == [token_balance_b]
+      assert TokenBalances.unfetched_token_balances(token_balances, fetched_token_balances) == [
+               token_balance_b
+             ]
     end
   end
 
@@ -402,7 +408,11 @@ defmodule Indexer.TokenBalancesTest do
         {:ok,
          requests
          |> Enum.map(fn
-           %{id: id, method: "eth_call", params: [%{data: _, to: "0x57e93bb58268de818b42e3795c97bad58afcd3fe"}, _]} ->
+           %{
+             id: id,
+             method: "eth_call",
+             params: [%{data: _, to: "0x57e93bb58268de818b42e3795c97bad58afcd3fe"}, _]
+           } ->
              %{
                id: id,
                jsonrpc: "2.0",
@@ -414,7 +424,8 @@ defmodule Indexer.TokenBalancesTest do
              method: "eth_call",
              params: [
                %{
-                 data: "0x70a08231000000000000000000000000609991ca0ae39bc4eaf2669976237296d40c2f31",
+                 data:
+                   "0x70a08231000000000000000000000000609991ca0ae39bc4eaf2669976237296d40c2f31",
                  to: "0xe0d0b1dbbcf3dd5cac67edaf9243863fd70745da"
                },
                _
@@ -431,7 +442,8 @@ defmodule Indexer.TokenBalancesTest do
              method: "eth_call",
              params: [
                %{
-                 data: "0x70a08231000000000000000000000000609991ca0ae39bc4eaf2669976237296d40c2f31",
+                 data:
+                   "0x70a08231000000000000000000000000609991ca0ae39bc4eaf2669976237296d40c2f31",
                  to: "0x22c1f6050e56d2876009903609a2cc3fef83b415"
                },
                _
@@ -448,7 +460,8 @@ defmodule Indexer.TokenBalancesTest do
              method: "eth_call",
              params: [
                %{
-                 data: "0x70a08231000000000000000000000000f712a82dd8e2ac923299193e9d6daeda2d5a32fd",
+                 data:
+                   "0x70a08231000000000000000000000000f712a82dd8e2ac923299193e9d6daeda2d5a32fd",
                  to: "0xe0d0b1dbbcf3dd5cac67edaf9243863fd70745da"
                },
                _
@@ -465,7 +478,8 @@ defmodule Indexer.TokenBalancesTest do
              method: "eth_call",
              params: [
                %{
-                 data: "0x70a08231000000000000000000000000e0d0b1dbbcf3dd5cac67edaf9243863fd70745da",
+                 data:
+                   "0x70a08231000000000000000000000000e0d0b1dbbcf3dd5cac67edaf9243863fd70745da",
                  to: "0xe0d0b1dbbcf3dd5cac67edaf9243863fd70745da"
                },
                _

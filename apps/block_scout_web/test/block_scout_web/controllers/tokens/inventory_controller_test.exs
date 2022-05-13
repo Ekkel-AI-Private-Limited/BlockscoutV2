@@ -17,7 +17,7 @@ defmodule BlockScoutWeb.Tokens.InventoryControllerTest do
 
     test "successfully renders the page", %{conn: conn} do
       token_contract_address = insert(:contract_address)
-      token = insert(:token, type: "ERC-721", contract_address: token_contract_address)
+      token = insert(:token, type: "ZEN-721", contract_address: token_contract_address)
 
       transaction =
         :transaction
@@ -41,7 +41,7 @@ defmodule BlockScoutWeb.Tokens.InventoryControllerTest do
     end
 
     test "returns next page of results based on last seen token balance", %{conn: conn} do
-      token = insert(:token, type: "ERC-721")
+      token = insert(:token, type: "ZEN-721")
 
       transaction =
         :transaction
@@ -71,7 +71,8 @@ defmodule BlockScoutWeb.Tokens.InventoryControllerTest do
           "type" => "JSON"
         })
 
-      conn = get(conn, token_inventory_path(conn, :index, token.contract_address_hash), %{type: "JSON"})
+      conn =
+        get(conn, token_inventory_path(conn, :index, token.contract_address_hash), %{type: "JSON"})
 
       {:ok, %{"items" => items}} =
         conn.resp_body
@@ -81,7 +82,7 @@ defmodule BlockScoutWeb.Tokens.InventoryControllerTest do
     end
 
     test "next_page_path exists if not on last page", %{conn: conn} do
-      token = insert(:token, type: "ERC-721")
+      token = insert(:token, type: "ZEN-721")
 
       transaction =
         :transaction
@@ -104,7 +105,8 @@ defmodule BlockScoutWeb.Tokens.InventoryControllerTest do
         )
       end)
 
-      conn = get(conn, token_inventory_path(conn, :index, token.contract_address_hash), %{type: "JSON"})
+      conn =
+        get(conn, token_inventory_path(conn, :index, token.contract_address_hash), %{type: "JSON"})
 
       {:ok, %{"next_page_path" => next_page_path}} =
         conn.resp_body
@@ -114,7 +116,7 @@ defmodule BlockScoutWeb.Tokens.InventoryControllerTest do
     end
 
     test "next_page_path is empty if on last page", %{conn: conn} do
-      token = insert(:token, type: "ERC-721")
+      token = insert(:token, type: "ZEN-721")
 
       transaction =
         :transaction
@@ -129,7 +131,8 @@ defmodule BlockScoutWeb.Tokens.InventoryControllerTest do
         token_id: 1000
       )
 
-      conn = get(conn, token_inventory_path(conn, :index, token.contract_address_hash), %{type: "JSON"})
+      conn =
+        get(conn, token_inventory_path(conn, :index, token.contract_address_hash), %{type: "JSON"})
 
       {:ok, %{"next_page_path" => next_page_path}} =
         conn.resp_body

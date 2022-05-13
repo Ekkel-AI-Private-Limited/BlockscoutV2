@@ -86,7 +86,10 @@ defmodule BlockScoutWeb.ViewingAddressesTest do
     test "see the contract creator and transaction links", %{session: session} do
       address = insert(:address)
       contract = insert(:contract_address)
-      transaction = insert(:transaction, from_address: address, created_contract_address: contract) |> with_block()
+
+      transaction =
+        insert(:transaction, from_address: address, created_contract_address: contract)
+        |> with_block()
 
       internal_transaction =
         insert(
@@ -107,7 +110,8 @@ defmodule BlockScoutWeb.ViewingAddressesTest do
       |> assert_text(AddressPage.contract_creator(), "#{address_hash} at #{transaction_hash}")
     end
 
-    test "see the contract creator and transaction links even when the creator is another contract", %{session: session} do
+    test "see the contract creator and transaction links even when the creator is another contract",
+         %{session: session} do
       lincoln = insert(:address)
       contract = insert(:contract_address)
       transaction = insert(:transaction) |> with_block()
@@ -250,7 +254,10 @@ defmodule BlockScoutWeb.ViewingAddressesTest do
       |> refute_has(AddressPage.internal_transaction_address_link(internal_transaction, :to))
     end
 
-    test "viewing new internal transactions via live update", %{addresses: addresses, session: session} do
+    test "viewing new internal transactions via live update", %{
+      addresses: addresses,
+      session: session
+    } do
       transaction =
         :transaction
         |> insert(from_address: addresses.lincoln)
@@ -272,7 +279,9 @@ defmodule BlockScoutWeb.ViewingAddressesTest do
           block_index: 2
         )
 
-      Notifier.handle_event({:chain_event, :internal_transactions, :realtime, [internal_transaction]})
+      Notifier.handle_event(
+        {:chain_event, :internal_transactions, :realtime, [internal_transaction]}
+      )
 
       session
       |> assert_has(AddressPage.internal_transactions(count: 3))
@@ -371,7 +380,10 @@ defmodule BlockScoutWeb.ViewingAddressesTest do
         token_contract_address: contract_address
       )
 
-      insert(:address_current_token_balance, address: lincoln, token_contract_address_hash: contract_address.hash)
+      insert(:address_current_token_balance,
+        address: lincoln,
+        token_contract_address_hash: contract_address.hash
+      )
 
       session
       |> AddressPage.visit_page(lincoln)
@@ -387,11 +399,20 @@ defmodule BlockScoutWeb.ViewingAddressesTest do
   describe "viewing token balances" do
     setup do
       block = insert(:block)
-      lincoln = insert(:address, fetched_coin_balance: 5, fetched_coin_balance_block_number: block.number)
+
+      lincoln =
+        insert(:address, fetched_coin_balance: 5, fetched_coin_balance_block_number: block.number)
+
       taft = insert(:address, fetched_coin_balance: 5)
 
       contract_address = insert(:contract_address)
-      insert(:token, name: "atoken", symbol: "AT", contract_address: contract_address, type: "ERC-721")
+
+      insert(:token,
+        name: "atoken",
+        symbol: "AT",
+        contract_address: contract_address,
+        type: "ZEN-721"
+      )
 
       transaction =
         :transaction
@@ -406,10 +427,19 @@ defmodule BlockScoutWeb.ViewingAddressesTest do
         token_contract_address: contract_address
       )
 
-      insert(:address_current_token_balance, address: lincoln, token_contract_address_hash: contract_address.hash)
+      insert(:address_current_token_balance,
+        address: lincoln,
+        token_contract_address_hash: contract_address.hash
+      )
 
       contract_address_2 = insert(:contract_address)
-      insert(:token, name: "token2", symbol: "T2", contract_address: contract_address_2, type: "ERC-20")
+
+      insert(:token,
+        name: "token2",
+        symbol: "T2",
+        contract_address: contract_address_2,
+        type: "ZEN-20"
+      )
 
       transaction_2 =
         :transaction
@@ -424,7 +454,10 @@ defmodule BlockScoutWeb.ViewingAddressesTest do
         token_contract_address: contract_address_2
       )
 
-      insert(:address_current_token_balance, address: lincoln, token_contract_address_hash: contract_address_2.hash)
+      insert(:address_current_token_balance,
+        address: lincoln,
+        token_contract_address_hash: contract_address_2.hash
+      )
 
       {:ok, lincoln: lincoln}
     end
@@ -441,7 +474,7 @@ defmodule BlockScoutWeb.ViewingAddressesTest do
       |> AddressPage.fill_balance_dropdown_search("ato")
       |> assert_has(AddressPage.token_balance(count: 1))
       |> assert_has(AddressPage.token_type(count: 1))
-      |> assert_has(AddressPage.token_type_count(type: "ERC-721", text: "1"))
+      |> assert_has(AddressPage.token_type_count(type: "ZEN-721", text: "1"))
     end
 
     test "filter token balances by token symbol", %{session: session, lincoln: lincoln} do
@@ -456,7 +489,7 @@ defmodule BlockScoutWeb.ViewingAddressesTest do
       |> AddressPage.fill_balance_dropdown_search("T2")
       |> assert_has(AddressPage.token_balance(count: 1))
       |> assert_has(AddressPage.token_type(count: 1))
-      |> assert_has(AddressPage.token_type_count(type: "ERC-20", text: "1"))
+      |> assert_has(AddressPage.token_type_count(type: "ZEN-20", text: "1"))
     end
 
     test "reset token balances filter when dropdown closes", %{session: session, lincoln: lincoln} do
@@ -481,7 +514,12 @@ defmodule BlockScoutWeb.ViewingAddressesTest do
       block = insert(:block, timestamp: noon)
       block_one_day_ago = insert(:block, timestamp: Timex.shift(noon, days: -1))
       insert(:fetched_balance, address_hash: address.hash, value: 5, block_number: block.number)
-      insert(:fetched_balance, address_hash: address.hash, value: 10, block_number: block_one_day_ago.number)
+
+      insert(:fetched_balance,
+        address_hash: address.hash,
+        value: 10,
+        block_number: block_one_day_ago.number
+      )
 
       {:ok, address: address}
     end

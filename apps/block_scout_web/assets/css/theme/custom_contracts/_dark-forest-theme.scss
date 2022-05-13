@@ -71,7 +71,7 @@ $dark-primary-alternate: $dark-primary;
 		color: #fff;
 	}
 	.footer-list ul li::before {
-		background-color: $dark-secondary;
+		background-color: #fff;
 		border-radius: 0px;
 		height: 2px;
 		width: 10px;
@@ -89,7 +89,7 @@ $dark-primary-alternate: $dark-primary;
 	}
 	.dashboard-banner-network-stats-label,
 	.dashboard-banner-chart-legend .dashboard-banner-chart-legend-label {
-		color: $labels-dark;
+		color: #47a9f2!important;
 	}
 	.dashboard-banner-chart-legend .dashboard-banner-chart-legend-item:nth-child(1)::before {
 		background-color: $dark-primary;

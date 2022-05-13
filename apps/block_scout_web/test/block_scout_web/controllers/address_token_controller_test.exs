@@ -28,7 +28,15 @@ defmodule BlockScoutWeb.AddressTokenControllerTest do
     end
 
     test "with valid address hash without address", %{conn: conn} do
-      conn = get(conn, address_token_path(conn, :index, Address.checksum("0x8bf38d4764929064f2d4d3a56520a76ab3df415b")))
+      conn =
+        get(
+          conn,
+          address_token_path(
+            conn,
+            :index,
+            Address.checksum("0x8bf38d4764929064f2d4d3a56520a76ab3df415b")
+          )
+        )
 
       assert html_response(conn, 404)
     end
@@ -79,8 +87,14 @@ defmodule BlockScoutWeb.AddressTokenControllerTest do
         |> Poison.decode()
 
       assert json_response(conn, 200)
-      assert Enum.any?(items, fn item -> String.contains?(item, to_string(token1.contract_address_hash)) end)
-      refute Enum.any?(items, fn item -> String.contains?(item, to_string(token2.contract_address_hash)) end)
+
+      assert Enum.any?(items, fn item ->
+               String.contains?(item, to_string(token1.contract_address_hash))
+             end)
+
+      refute Enum.any?(items, fn item ->
+               String.contains?(item, to_string(token2.contract_address_hash))
+             end)
     end
 
     test "returns next page of results based on last seen token", %{conn: conn} do
@@ -89,7 +103,7 @@ defmodule BlockScoutWeb.AddressTokenControllerTest do
       second_page_tokens =
         1..50
         |> Enum.reduce([], fn i, acc ->
-          token = insert(:token, name: "A Token#{i}", type: "ERC-20")
+          token = insert(:token, name: "A Token#{i}", type: "ZEN-20")
 
           insert(
             :address_current_token_balance,
@@ -102,7 +116,7 @@ defmodule BlockScoutWeb.AddressTokenControllerTest do
         end)
         |> Enum.sort()
 
-      token = insert(:token, name: "Another Token", type: "ERC-721")
+      token = insert(:token, name: "Another Token", type: "ZEN-721")
 
       insert(
         :address_current_token_balance,
@@ -114,19 +128,25 @@ defmodule BlockScoutWeb.AddressTokenControllerTest do
       %Token{name: name, type: type, inserted_at: inserted_at} = token
 
       conn =
-        get(conn, address_token_path(BlockScoutWeb.Endpoint, :index, Address.checksum(address.hash)), %{
-          "token_name" => name,
-          "token_type" => type,
-          "value" => 1000,
-          "type" => "JSON"
-        })
+        get(
+          conn,
+          address_token_path(BlockScoutWeb.Endpoint, :index, Address.checksum(address.hash)),
+          %{
+            "token_name" => name,
+            "token_type" => type,
+            "value" => 1000,
+            "type" => "JSON"
+          }
+        )
 
       {:ok, %{"items" => items}} =
         conn.resp_body
         |> Poison.decode()
 
       assert Enum.any?(items, fn item ->
-               Enum.any?(second_page_tokens, fn token_name -> String.contains?(item, token_name) end)
+               Enum.any?(second_page_tokens, fn token_name ->
+                 String.contains?(item, token_name)
+               end)
              end)
     end
 
@@ -134,7 +154,7 @@ defmodule BlockScoutWeb.AddressTokenControllerTest do
       address = insert(:address)
 
       Enum.each(1..51, fn i ->
-        token = insert(:token, name: "A Token#{i}", type: "ERC-20")
+        token = insert(:token, name: "A Token#{i}", type: "ZEN-20")
 
         insert(
           :address_current_token_balance,
@@ -143,10 +163,18 @@ defmodule BlockScoutWeb.AddressTokenControllerTest do
           value: 1000
         )
 
-        insert(:token_transfer, token_contract_address: token.contract_address, from_address: address)
+        insert(:token_transfer,
+          token_contract_address: token.contract_address,
+          from_address: address
+        )
       end)
 
-      conn = get(conn, address_token_path(BlockScoutWeb.Endpoint, :index, Address.checksum(address.hash)), type: "JSON")
+      conn =
+        get(
+          conn,
+          address_token_path(BlockScoutWeb.Endpoint, :index, Address.checksum(address.hash)),
+          type: "JSON"
+        )
 
       {:ok, %{"next_page_path" => next_page_path}} =
         conn.resp_body
@@ -158,9 +186,18 @@ defmodule BlockScoutWeb.AddressTokenControllerTest do
     test "next_page_params are empty if on last page", %{conn: conn} do
       address = insert(:address)
       token = insert(:token)
-      insert(:token_transfer, token_contract_address: token.contract_address, from_address: address)
 
-      conn = get(conn, address_token_path(BlockScoutWeb.Endpoint, :index, Address.checksum(address.hash)), type: "JSON")
+      insert(:token_transfer,
+        token_contract_address: token.contract_address,
+        from_address: address
+      )
+
+      conn =
+        get(
+          conn,
+          address_token_path(BlockScoutWeb.Endpoint, :index, Address.checksum(address.hash)),
+          type: "JSON"
+        )
 
       {:ok, %{"next_page_path" => next_page_path}} =
         conn.resp_body

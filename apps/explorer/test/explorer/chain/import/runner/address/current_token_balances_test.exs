@@ -1,7 +1,8 @@
 defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalancesTest do
   use Explorer.DataCase
 
-  import Explorer.Chain.Import.RunnerCase, only: [insert_token_balance: 1, update_holder_count!: 2]
+  import Explorer.Chain.Import.RunnerCase,
+    only: [insert_token_balance: 1, update_holder_count!: 2]
 
   alias Ecto.Multi
   alias Explorer.Chain.{Address, Token}
@@ -147,7 +148,7 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalancesTest do
                      value: value_1,
                      value_fetched_at: DateTime.utc_now(),
                      token_id: token_id_1,
-                     token_type: "ERC-1155"
+                     token_type: "ZEN-1155"
                    },
                    %{
                      address_hash: address_hash,
@@ -156,7 +157,7 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalancesTest do
                      value: value_2,
                      value_fetched_at: DateTime.utc_now(),
                      token_id: token_id_2,
-                     token_type: "ERC-1155"
+                     token_type: "ZEN-1155"
                    },
                    %{
                      address_hash: address_hash,
@@ -165,7 +166,7 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalancesTest do
                      value: value_3,
                      value_fetched_at: DateTime.utc_now(),
                      token_id: token_id_3,
-                     token_type: "ERC-20"
+                     token_type: "ZEN-20"
                    },
                    %{
                      address_hash: address_hash,
@@ -174,7 +175,7 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalancesTest do
                      value: value_4,
                      value_fetched_at: DateTime.utc_now(),
                      token_id: token_id_4,
-                     token_type: "ERC-721"
+                     token_type: "ZEN-721"
                    },
                    %{
                      address_hash: address_hash,
@@ -183,7 +184,7 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalancesTest do
                      value: value_5,
                      value_fetched_at: DateTime.utc_now(),
                      token_id: token_id_5,
-                     token_type: "ERC-721"
+                     token_type: "ZEN-721"
                    }
                  ],
                  options
@@ -244,7 +245,11 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalancesTest do
 
       update_holder_count!(token_contract_address_hash, 1)
 
-      assert {:ok, %{address_current_token_balances: [], address_current_token_balances_update_token_holder_counts: []}} =
+      assert {:ok,
+              %{
+                address_current_token_balances: [],
+                address_current_token_balances_update_token_holder_counts: []
+              }} =
                run_changes(
                  %{
                    address_hash: address_hash,
@@ -352,7 +357,9 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalancesTest do
 
     test "a non-holder becoming and a holder becoming while a holder becomes a non-holder cancels out and holder_count does not change",
          %{
-           address: %Address{hash: non_holder_becomes_holder_address_hash} = non_holder_becomes_holder_address,
+           address:
+             %Address{hash: non_holder_becomes_holder_address_hash} =
+               non_holder_becomes_holder_address,
            token: %Token{contract_address_hash: token_contract_address_hash},
            options: options
          } do
@@ -365,7 +372,8 @@ defmodule Explorer.Chain.Import.Runner.Address.CurrentTokenBalancesTest do
         value: 0
       })
 
-      %Address{hash: holder_becomes_non_holder_address_hash} = holder_becomes_non_holder_address = insert(:address)
+      %Address{hash: holder_becomes_non_holder_address_hash} =
+        holder_becomes_non_holder_address = insert(:address)
 
       insert_token_balance(%{
         address: holder_becomes_non_holder_address,

@@ -16,7 +16,10 @@ defmodule Indexer.TokenBalances do
   @erc1155_balance_function_abi [
     %{
       "constant" => true,
-      "inputs" => [%{"name" => "_owner", "type" => "address"}, %{"name" => "_id", "type" => "uint256"}],
+      "inputs" => [
+        %{"name" => "_owner", "type" => "address"},
+        %{"name" => "_id", "type" => "uint256"}
+      ],
       "name" => "balanceOf",
       "outputs" => [%{"name" => "", "type" => "uint256"}],
       "payable" => false,
@@ -39,7 +42,7 @@ defmodule Indexer.TokenBalances do
   * `address_hash` - The address_hash that we want to know the balance.
   * `block_number` - The block number that the address_hash has the balance.
   * `token_type` - type of the token that balance belongs to
-  * `token_id` - token id for ERC-1155 tokens
+  * `token_id` - token id for ZEN-1155 tokens
   """
   def fetch_token_balances_from_blockchain([]), do: {:ok, []}
 
@@ -51,7 +54,7 @@ defmodule Indexer.TokenBalances do
       token_balances
       |> Enum.filter(fn request ->
         if Map.has_key?(request, :token_type) do
-          request.token_type !== "ERC-1155"
+          request.token_type !== "ZEN-1155"
         else
           true
         end
@@ -61,7 +64,7 @@ defmodule Indexer.TokenBalances do
       token_balances
       |> Enum.filter(fn request ->
         if Map.has_key?(request, :token_type) do
-          request.token_type == "ERC-1155"
+          request.token_type == "ZEN-1155"
         else
           false
         end
@@ -79,7 +82,9 @@ defmodule Indexer.TokenBalances do
       |> Stream.zip(erc1155_token_balances)
       |> Enum.map(fn {result, token_balance} -> set_token_balance_value(result, token_balance) end)
 
-    requested_token_balances = requested_regular_token_balances ++ requested_erc1155_token_balances
+    requested_token_balances =
+      requested_regular_token_balances ++ requested_erc1155_token_balances
+
     fetched_token_balances = Enum.filter(requested_token_balances, &ignore_request_with_errors/1)
 
     requested_token_balances
@@ -93,10 +98,15 @@ defmodule Indexer.TokenBalances do
       |> MapSet.difference(MapSet.new(fetched_token_balances))
       |> MapSet.to_list()
 
-    {:ok, %{fetched_token_balances: fetched_token_balances, failed_token_balances: failed_token_balances}}
+    {:ok,
+     %{
+       fetched_token_balances: fetched_token_balances,
+       failed_token_balances: failed_token_balances
+     }}
   end
 
-  def to_address_current_token_balances(address_token_balances) when is_list(address_token_balances) do
+  def to_address_current_token_balances(address_token_balances)
+      when is_list(address_token_balances) do
     address_token_balances
     |> Enum.group_by(fn %{
                           address_hash: address_hash,
@@ -106,7 +116,9 @@ defmodule Indexer.TokenBalances do
       {address_hash, token_contract_address_hash, token_id}
     end)
     |> Enum.map(fn {_, grouped_address_token_balances} ->
-      Enum.max_by(grouped_address_token_balances, fn %{block_number: block_number} -> block_number end)
+      Enum.max_by(grouped_address_token_balances, fn %{block_number: block_number} ->
+        block_number
+      end)
     end)
     |> Enum.sort_by(&{&1.token_contract_address_hash, &1.token_id, &1.address_hash})
   end
@@ -122,7 +134,9 @@ defmodule Indexer.TokenBalances do
   defp schedule_token_balances([]), do: nil
 
   defp schedule_token_balances(unfetched_token_balances) do
-    Logger.debug(fn -> "#{Enum.count(unfetched_token_balances)} token balances will be retried" end)
+    Logger.debug(fn ->
+      "#{Enum.count(unfetched_token_balances)} token balances will be retried"
+    end)
 
     log_fetching_errors(unfetched_token_balances)
 
@@ -157,7 +171,8 @@ defmodule Indexer.TokenBalances do
         "<address_hash: #{token_balance.address_hash}, " <>
           "contract_address_hash: #{token_balance.token_contract_address_hash}, " <>
           "block_number: #{token_balance.block_number}, " <>
-          "error: #{token_balance.error}>, " <> "retried: #{Map.get(token_balance, :retries_count, 1)} times\n"
+          "error: #{token_balance.error}>, " <>
+          "retried: #{Map.get(token_balance, :retries_count, 1)} times\n"
       end)
 
     if Enum.any?(error_messages) do

@@ -43,12 +43,12 @@ defmodule Explorer.Chain.TokenTransfer do
   * `:to_address_hash` - Address hash foreign key
   * `:token_contract_address` - The `t:Explorer.Chain.Address.t/0` of the token's contract.
   * `:token_contract_address_hash` - Address hash foreign key
-  * `:token_id` - ID of the token (applicable to ERC-721 tokens)
+  * `:token_id` - ID of the token (applicable to ZEN-721 tokens)
   * `:transaction` - The `t:Explorer.Chain.Transaction.t/0` ledger
   * `:transaction_hash` - Transaction foreign key
   * `:log_index` - Index of the corresponding `t:Explorer.Chain.Log.t/0` in the transaction.
-  * `:amounts` - Tokens transferred amounts in case of batched transfer in ERC-1155
-  * `:token_ids` - IDs of the tokens (applicable to ERC-1155 tokens)
+  * `:amounts` - Tokens transferred amounts in case of batched transfer in ZEN-1155
+  * `:token_ids` - IDs of the tokens (applicable to ZEN-1155 tokens)
   """
   @type t :: %TokenTransfer{
           amount: Decimal.t() | nil,
@@ -85,8 +85,17 @@ defmodule Explorer.Chain.TokenTransfer do
     field(:amounts, {:array, :decimal})
     field(:token_ids, {:array, :decimal})
 
-    belongs_to(:from_address, Address, foreign_key: :from_address_hash, references: :hash, type: Hash.Address)
-    belongs_to(:to_address, Address, foreign_key: :to_address_hash, references: :hash, type: Hash.Address)
+    belongs_to(:from_address, Address,
+      foreign_key: :from_address_hash,
+      references: :hash,
+      type: Hash.Address
+    )
+
+    belongs_to(:to_address, Address,
+      foreign_key: :to_address_hash,
+      references: :hash,
+      type: Hash.Address
+    )
 
     belongs_to(
       :token_contract_address,
@@ -158,7 +167,8 @@ defmodule Explorer.Chain.TokenTransfer do
     query =
       from(
         tt in TokenTransfer,
-        where: tt.token_contract_address_hash == ^token_address_hash and not is_nil(tt.block_number),
+        where:
+          tt.token_contract_address_hash == ^token_address_hash and not is_nil(tt.block_number),
         preload: [{:transaction, :block}, :token, :from_address, :to_address],
         order_by: [desc: tt.block_number]
       )
@@ -169,7 +179,8 @@ defmodule Explorer.Chain.TokenTransfer do
     |> Repo.all()
   end
 
-  @spec fetch_token_transfers_from_token_hash_and_token_id(Hash.t(), binary(), [paging_options]) :: []
+  @spec fetch_token_transfers_from_token_hash_and_token_id(Hash.t(), binary(), [paging_options]) ::
+          []
   def fetch_token_transfers_from_token_hash_and_token_id(token_address_hash, token_id, options) do
     paging_options = Keyword.get(options, :paging_options, @default_paging_options)
 
@@ -201,7 +212,8 @@ defmodule Explorer.Chain.TokenTransfer do
     Repo.one(query, timeout: :infinity)
   end
 
-  @spec count_token_transfers_from_token_hash_and_token_id(Hash.t(), binary()) :: non_neg_integer()
+  @spec count_token_transfers_from_token_hash_and_token_id(Hash.t(), binary()) ::
+          non_neg_integer()
   def count_token_transfers_from_token_hash_and_token_id(token_address_hash, token_id) do
     query =
       from(
@@ -223,7 +235,8 @@ defmodule Explorer.Chain.TokenTransfer do
     where(
       query,
       [tt],
-      tt.block_number > ^block_number or (tt.block_number == ^block_number and tt.log_index > ^log_index)
+      tt.block_number > ^block_number or
+        (tt.block_number == ^block_number and tt.log_index > ^log_index)
     )
   end
 
@@ -231,7 +244,8 @@ defmodule Explorer.Chain.TokenTransfer do
     where(
       query,
       [tt],
-      tt.block_number < ^block_number or (tt.block_number == ^block_number and tt.log_index < ^log_index)
+      tt.block_number < ^block_number or
+        (tt.block_number == ^block_number and tt.log_index < ^log_index)
     )
   end
 
@@ -275,10 +289,15 @@ defmodule Explorer.Chain.TokenTransfer do
     transaction_hashes_from_token_transfers_sql(address_bytes, paging_options)
   end
 
-  defp transaction_hashes_from_token_transfers_sql(address_bytes, %PagingOptions{page_size: page_size} = paging_options) do
+  defp transaction_hashes_from_token_transfers_sql(
+         address_bytes,
+         %PagingOptions{page_size: page_size} = paging_options
+       ) do
     query =
       from(token_transfer in TokenTransfer,
-        where: token_transfer.to_address_hash == ^address_bytes or token_transfer.from_address_hash == ^address_bytes,
+        where:
+          token_transfer.to_address_hash == ^address_bytes or
+            token_transfer.from_address_hash == ^address_bytes,
         select: type(token_transfer.transaction_hash, :binary),
         distinct: token_transfer.transaction_hash,
         limit: ^page_size
@@ -291,7 +310,9 @@ defmodule Explorer.Chain.TokenTransfer do
 
   defp page_transaction_hashes_from_token_transfers(query, %PagingOptions{key: nil}), do: query
 
-  defp page_transaction_hashes_from_token_transfers(query, %PagingOptions{key: {block_number, _index}}) do
+  defp page_transaction_hashes_from_token_transfers(query, %PagingOptions{
+         key: {block_number, _index}
+       }) do
     where(
       query,
       [tt],
@@ -301,7 +322,7 @@ defmodule Explorer.Chain.TokenTransfer do
 
   @doc """
   Innventory tab query.
-  A token ERC-721 is considered unique because it corresponds to the possession
+  A token ZEN-721 is considered unique because it corresponds to the possession
   of a specific asset.
 
   To find out its current owner, it is necessary to look at the token last
@@ -312,7 +333,9 @@ defmodule Explorer.Chain.TokenTransfer do
     from(
       tt in TokenTransfer,
       left_join: instance in Instance,
-      on: tt.token_contract_address_hash == instance.token_contract_address_hash and tt.token_id == instance.token_id,
+      on:
+        tt.token_contract_address_hash == instance.token_contract_address_hash and
+          tt.token_id == instance.token_id,
       where: tt.token_contract_address_hash == ^contract_address_hash,
       where: tt.to_address_hash != ^"0x0000000000000000000000000000000000000000",
       order_by: [desc: tt.block_number],

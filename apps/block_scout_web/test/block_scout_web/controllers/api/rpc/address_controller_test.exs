@@ -21,7 +21,11 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
 
     start_supervised!({Task.Supervisor, name: Indexer.TaskSupervisor})
     start_supervised!(AverageBlockTime)
-    start_supervised!({CoinBalanceOnDemand, [mocked_json_rpc_named_arguments, [name: CoinBalanceOnDemand]]})
+
+    start_supervised!(
+      {CoinBalanceOnDemand, [mocked_json_rpc_named_arguments, [name: CoinBalanceOnDemand]]}
+    )
+
     start_supervised!(AddressesCounter)
 
     Application.put_env(:explorer, AverageBlockTime, enabled: true)
@@ -55,8 +59,18 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
     end
 
     test "with existing addresses", %{params: params, conn: conn} do
-      first_address = insert(:address, fetched_coin_balance: 10, inserted_at: Timex.shift(Timex.now(), minutes: -10))
-      second_address = insert(:address, fetched_coin_balance: 100, inserted_at: Timex.shift(Timex.now(), minutes: -5))
+      first_address =
+        insert(:address,
+          fetched_coin_balance: 10,
+          inserted_at: Timex.shift(Timex.now(), minutes: -10)
+        )
+
+      second_address =
+        insert(:address,
+          fetched_coin_balance: 100,
+          inserted_at: Timex.shift(Timex.now(), minutes: -5)
+        )
+
       first_address_hash = to_string(first_address.hash)
       second_address_hash = to_string(second_address.hash)
 
@@ -93,10 +107,15 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
         )
 
       mining_address_hash = to_string(mining_address.hash)
+
       # we space these very far apart so that we know it will consider the 0th block stale (it calculates how far
       # back we'd need to go to get 24 hours in the past)
       Enum.each(0..100, fn i ->
-        insert(:block, number: i, timestamp: Timex.shift(now, hours: -(102 - i) * 25), miner: mining_address)
+        insert(:block,
+          number: i,
+          timestamp: Timex.shift(now, hours: -(102 - i) * 25),
+          miner: mining_address
+        )
       end)
 
       insert(:block, number: 101, timestamp: Timex.shift(now, hours: -25), miner: mining_address)
@@ -289,7 +308,11 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
 
       expected_result =
         Enum.map(addresses, fn address ->
-          %{"account" => "#{address.hash}", "balance" => "#{address.fetched_coin_balance.value}", "stale" => false}
+          %{
+            "account" => "#{address.hash}",
+            "balance" => "#{address.fetched_coin_balance.value}",
+            "stale" => false
+          }
         end)
 
       assert response =
@@ -398,7 +421,11 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
 
       expected_result =
         Enum.map(addresses, fn address ->
-          %{"account" => "#{address.hash}", "balance" => "#{address.fetched_coin_balance.value}", "stale" => false}
+          %{
+            "account" => "#{address.hash}",
+            "balance" => "#{address.fetched_coin_balance.value}",
+            "stale" => false
+          }
         end)
 
       assert response =
@@ -426,7 +453,11 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
 
       expected_result = [
         %{"account" => address2_hash, "balance" => "0", "stale" => false},
-        %{"account" => "#{address1.hash}", "balance" => "#{address1.fetched_coin_balance.value}", "stale" => false}
+        %{
+          "account" => "#{address1.hash}",
+          "balance" => "#{address1.fetched_coin_balance.value}",
+          "stale" => false
+        }
       ]
 
       assert response =
@@ -479,7 +510,11 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
       }
 
       expected_result = [
-        %{"account" => "#{address.hash}", "balance" => "#{address.fetched_coin_balance.value}", "stale" => false}
+        %{
+          "account" => "#{address.hash}",
+          "balance" => "#{address.fetched_coin_balance.value}",
+          "stale" => false
+        }
       ]
 
       assert response =
@@ -2164,14 +2199,14 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
       assert :ok = ExJsonSchema.Validator.validate(tokentx_schema(), response)
     end
 
-    test "has correct value for ERC-721", %{conn: conn} do
+    test "has correct value for ZEN-721", %{conn: conn} do
       transaction =
         :transaction
         |> insert()
         |> with_block()
 
       token_address = insert(:contract_address)
-      insert(:token, %{contract_address: token_address, type: "ERC-721"})
+      insert(:token, %{contract_address: token_address, type: "ZEN-721"})
 
       token_transfer =
         insert(:token_transfer, %{
@@ -2210,7 +2245,11 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
         |> with_block()
 
       token_transfer =
-        insert(:token_transfer, block: transaction.block, transaction: transaction, block_number: block.number)
+        insert(:token_transfer,
+          block: transaction.block,
+          transaction: transaction,
+          block_number: block.number
+        )
 
       {:ok, token} = Chain.token_from_address_hash(token_transfer.token_contract_address_hash)
 
@@ -2461,7 +2500,9 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
       assert :ok = ExJsonSchema.Validator.validate(tokenbalance_schema(), response)
     end
 
-    test "with contract address and address with existing balance in token_balances table", %{conn: conn} do
+    test "with contract address and address with existing balance in token_balances table", %{
+      conn: conn
+    } do
       current_token_balance = insert(:address_current_token_balance)
 
       params = %{
@@ -3111,7 +3152,8 @@ defmodule BlockScoutWeb.API.RPC.AddressControllerTest do
         "timestamp" => "0x0",
         "totalDifficulty" => "0x20000",
         "transactions" => [],
-        "transactionsRoot" => "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
+        "transactionsRoot" =>
+          "0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421",
         "uncles" => []
       }
     }

@@ -104,14 +104,19 @@ defmodule Explorer.Chain.TokenTransferTest do
           token: token
         )
 
-      paging_options = %PagingOptions{key: {first_page.block_number, first_page.log_index}, page_size: 1}
+      paging_options = %PagingOptions{
+        key: {first_page.block_number, first_page.log_index},
+        page_size: 1
+      }
 
       token_transfers_primary_keys_paginated =
         token_contract_address.hash
         |> TokenTransfer.fetch_token_transfers_from_token_hash(paging_options: paging_options)
         |> Enum.map(&{&1.transaction_hash, &1.log_index})
 
-      assert token_transfers_primary_keys_paginated == [{second_page.transaction_hash, second_page.log_index}]
+      assert token_transfers_primary_keys_paginated == [
+               {second_page.transaction_hash, second_page.log_index}
+             ]
     end
 
     test "paginates considering the log_index when there are repeated block numbers" do
@@ -135,21 +140,26 @@ defmodule Explorer.Chain.TokenTransferTest do
           token: token
         )
 
-      paging_options = %PagingOptions{key: {token_transfer.block_number, token_transfer.log_index + 1}, page_size: 1}
+      paging_options = %PagingOptions{
+        key: {token_transfer.block_number, token_transfer.log_index + 1},
+        page_size: 1
+      }
 
       token_transfers_primary_keys_paginated =
         token_contract_address.hash
         |> TokenTransfer.fetch_token_transfers_from_token_hash(paging_options: paging_options)
         |> Enum.map(&{&1.transaction_hash, &1.log_index})
 
-      assert token_transfers_primary_keys_paginated == [{token_transfer.transaction_hash, token_transfer.log_index}]
+      assert token_transfers_primary_keys_paginated == [
+               {token_transfer.transaction_hash, token_transfer.log_index}
+             ]
     end
   end
 
   describe "address_to_unique_tokens/2" do
     test "returns list of unique tokens for a token contract" do
       token_contract_address = insert(:contract_address)
-      token = insert(:token, contract_address: token_contract_address, type: "ERC-721")
+      token = insert(:token, contract_address: token_contract_address, type: "ZEN-721")
 
       transaction =
         :transaction
@@ -230,7 +240,8 @@ defmodule Explorer.Chain.TokenTransferTest do
 
       {:ok, transaction_bytes} = Explorer.Chain.Hash.Full.dump(transaction.hash)
 
-      transactions_hashes = TokenTransfer.where_any_address_fields_match(:to, paul.hash, %PagingOptions{page_size: 1})
+      transactions_hashes =
+        TokenTransfer.where_any_address_fields_match(:to, paul.hash, %PagingOptions{page_size: 1})
 
       assert Enum.member?(transactions_hashes, transaction_bytes) == true
     end
@@ -268,7 +279,10 @@ defmodule Explorer.Chain.TokenTransferTest do
 
       {:ok, transaction_bytes} = Explorer.Chain.Hash.Full.dump(transaction.hash)
 
-      transactions_hashes = TokenTransfer.where_any_address_fields_match(:from, john.hash, %PagingOptions{page_size: 1})
+      transactions_hashes =
+        TokenTransfer.where_any_address_fields_match(:from, john.hash, %PagingOptions{
+          page_size: 1
+        })
 
       assert Enum.member?(transactions_hashes, transaction_bytes) == true
     end
@@ -317,7 +331,8 @@ defmodule Explorer.Chain.TokenTransferTest do
       {:ok, transaction_one_bytes} = Explorer.Chain.Hash.Full.dump(transaction_one.hash)
       {:ok, transaction_two_bytes} = Explorer.Chain.Hash.Full.dump(transaction_two.hash)
 
-      transactions_hashes = TokenTransfer.where_any_address_fields_match(nil, john.hash, %PagingOptions{page_size: 2})
+      transactions_hashes =
+        TokenTransfer.where_any_address_fields_match(nil, john.hash, %PagingOptions{page_size: 2})
 
       assert Enum.member?(transactions_hashes, transaction_one_bytes) == true
       assert Enum.member?(transactions_hashes, transaction_two_bytes) == true

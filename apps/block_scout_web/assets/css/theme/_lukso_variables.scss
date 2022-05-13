@@ -161,9 +161,14 @@ $dark-primary: #fdcec4;
 $dark-secondary: #a96c55;
 $dark-primary-alternate: #a96c55;
 
+
+.dashboard-banner-network-stats-value {
+  color: #fff;
+}
+
 .dark-theme-applied {
   .dashboard-banner-network-stats-value {
-    color: $dark-primary !important;
+    color: #fff;
   }
   .layout-container .dashboard-banner-container {
     background-color: #282945 !important;

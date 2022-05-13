@@ -19,7 +19,8 @@ defmodule Indexer.Transform.TokenTransfersTest do
             index: 8,
             second_topic: "0x000000000000000000000000556813d9cc20acfe8388af029a679d34a63388db",
             third_topic: "0x00000000000000000000000092148dd870fa1b7c4700f2bd7f44238821c26f73",
-            transaction_hash: "0x43dfd761974e8c3351d285ab65bee311454eb45b149a015fe7804a33252f19e5",
+            transaction_hash:
+              "0x43dfd761974e8c3351d285ab65bee311454eb45b149a015fe7804a33252f19e5",
             type: "mined"
           },
           %{
@@ -32,7 +33,8 @@ defmodule Indexer.Transform.TokenTransfersTest do
             index: 0,
             second_topic: "0x00000000000000000000000063b0595bb7a0b7edd0549c9557a0c8aee6da667b",
             third_topic: "0x000000000000000000000000f3089e15d0c23c181d7f98b0878b560bfe193a1d",
-            transaction_hash: "0x8425a9b81a9bd1c64861110c1a453b84719cb0361d6fa0db68abf7611b9a890e",
+            transaction_hash:
+              "0x8425a9b81a9bd1c64861110c1a453b84719cb0361d6fa0db68abf7611b9a890e",
             type: "mined"
           },
           %{
@@ -45,7 +47,8 @@ defmodule Indexer.Transform.TokenTransfersTest do
             index: 1,
             second_topic: "0x0000000000000000000000009851ba177554eb07271ac230a137551e6dd0aa84",
             third_topic: "0x000000000000000000000000dccb72afee70e60b0c1226288fe86c01b953e8ac",
-            transaction_hash: "0x4011d9a930a3da620321589a54dc0ca3b88216b4886c7a7c3aaad1fb17702d35",
+            transaction_hash:
+              "0x4011d9a930a3da620321589a54dc0ca3b88216b4886c7a7c3aaad1fb17702d35",
             type: "mined"
           }
         ]
@@ -54,11 +57,11 @@ defmodule Indexer.Transform.TokenTransfersTest do
         tokens: [
           %{
             contract_address_hash: log_3.address_hash,
-            type: "ERC-721"
+            type: "ZEN-721"
           },
           %{
             contract_address_hash: log_1.address_hash,
-            type: "ERC-20"
+            type: "ZEN-20"
           }
         ],
         token_transfers: [
@@ -70,7 +73,7 @@ defmodule Indexer.Transform.TokenTransfersTest do
             token_contract_address_hash: log_3.address_hash,
             token_id: 183,
             transaction_hash: log_3.transaction_hash,
-            token_type: "ERC-721",
+            token_type: "ZEN-721",
             block_hash: log_3.block_hash
           },
           %{
@@ -82,7 +85,7 @@ defmodule Indexer.Transform.TokenTransfersTest do
             to_address_hash: truncated_hash(log_1.third_topic),
             token_contract_address_hash: log_1.address_hash,
             transaction_hash: log_1.transaction_hash,
-            token_type: "ERC-20",
+            token_type: "ZEN-20",
             block_hash: log_1.block_hash
           }
         ]
@@ -91,7 +94,7 @@ defmodule Indexer.Transform.TokenTransfersTest do
       assert TokenTransfers.parse(logs) == expected
     end
 
-    test "parses ERC-721 transfer with addresses in data field" do
+    test "parses ZEN-721 transfer with addresses in data field" do
       log = %{
         address_hash: "0x58Ab73CB79c8275628E0213742a85B163fE0A9Fb",
         block_number: 8_683_457,
@@ -111,7 +114,7 @@ defmodule Indexer.Transform.TokenTransfersTest do
         tokens: [
           %{
             contract_address_hash: "0x58Ab73CB79c8275628E0213742a85B163fE0A9Fb",
-            type: "ERC-721"
+            type: "ZEN-721"
           }
         ],
         token_transfers: [
@@ -124,7 +127,7 @@ defmodule Indexer.Transform.TokenTransfersTest do
             token_contract_address_hash: log.address_hash,
             token_id: 14_939,
             transaction_hash: log.transaction_hash,
-            token_type: "ERC-721"
+            token_type: "ZEN-721"
           }
         ]
       }
@@ -152,7 +155,8 @@ defmodule Indexer.Transform.TokenTransfersTest do
                token_transfers: [
                  %{
                    amount: 1,
-                   block_hash: "0x79594150677f083756a37eee7b97ed99ab071f502104332cb3835bac345711ca",
+                   block_hash:
+                     "0x79594150677f083756a37eee7b97ed99ab071f502104332cb3835bac345711ca",
                    block_number: 8_683_457,
                    from_address_hash: "0x9c978f4cfa1fe13406bcc05baf26a35716f881dd",
                    log_index: 2,
@@ -160,14 +164,15 @@ defmodule Indexer.Transform.TokenTransfersTest do
                    token_contract_address_hash: "0x58Ab73CB79c8275628E0213742a85B163fE0A9Fb",
                    token_id:
                      7_237_005_577_332_282_011_952_059_972_634_123_378_909_214_838_582_411_639_295_170_840_059_424_276_480,
-                   token_type: "ERC-1155",
-                   transaction_hash: "0x6d2dd62c178e55a13b65601f227c4ffdd8aa4e3bcb1f24731363b4f7619e92c8"
+                   token_type: "ZEN-1155",
+                   transaction_hash:
+                     "0x6d2dd62c178e55a13b65601f227c4ffdd8aa4e3bcb1f24731363b4f7619e92c8"
                  }
                ],
                tokens: [
                  %{
                    contract_address_hash: "0x58Ab73CB79c8275628E0213742a85B163fE0A9Fb",
-                   type: "ERC-1155"
+                   type: "ZEN-1155"
                  }
                ]
              }
@@ -192,7 +197,8 @@ defmodule Indexer.Transform.TokenTransfersTest do
       assert TokenTransfers.parse([log]) == %{
                token_transfers: [
                  %{
-                   block_hash: "0x79594150677f083756a37eee7b97ed99ab071f502104332cb3835bac345711ca",
+                   block_hash:
+                     "0x79594150677f083756a37eee7b97ed99ab071f502104332cb3835bac345711ca",
                    block_number: 8_683_457,
                    from_address_hash: "0x6c943470780461b00783ad530a53913bd2c104d3",
                    log_index: 2,
@@ -200,12 +206,18 @@ defmodule Indexer.Transform.TokenTransfersTest do
                    token_contract_address_hash: "0x58Ab73CB79c8275628E0213742a85B163fE0A9Fb",
                    token_id: nil,
                    token_ids: [680_564_733_841_876_926_926_749_214_863_536_422_912],
-                   token_type: "ERC-1155",
-                   transaction_hash: "0x6d2dd62c178e55a13b65601f227c4ffdd8aa4e3bcb1f24731363b4f7619e92c8",
+                   token_type: "ZEN-1155",
+                   transaction_hash:
+                     "0x6d2dd62c178e55a13b65601f227c4ffdd8aa4e3bcb1f24731363b4f7619e92c8",
                    amounts: [5000]
                  }
                ],
-               tokens: [%{contract_address_hash: "0x58Ab73CB79c8275628E0213742a85B163fE0A9Fb", type: "ERC-1155"}]
+               tokens: [
+                 %{
+                   contract_address_hash: "0x58Ab73CB79c8275628E0213742a85B163fE0A9Fb",
+                   type: "ZEN-1155"
+                 }
+               ]
              }
     end
 
@@ -224,7 +236,9 @@ defmodule Indexer.Transform.TokenTransfersTest do
         type: "mined"
       }
 
-      error = capture_log(fn -> %{tokens: [], token_transfers: []} = TokenTransfers.parse([log]) end)
+      error =
+        capture_log(fn -> %{tokens: [], token_transfers: []} = TokenTransfers.parse([log]) end)
+
       assert error =~ ~r"unknown token transfer"i
     end
   end

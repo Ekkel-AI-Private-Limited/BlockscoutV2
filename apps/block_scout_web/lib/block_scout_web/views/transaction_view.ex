@@ -31,8 +31,12 @@ defmodule BlockScoutWeb.TransactionView do
   defdelegate formatted_timestamp(block), to: BlockView
 
   def block_number(%Transaction{block_number: nil}), do: gettext("Block Pending")
-  def block_number(%Transaction{block: block}), do: [view_module: BlockView, partial: "_link.html", block: block]
-  def block_number(%Reward{block: block}), do: [view_module: BlockView, partial: "_link.html", block: block]
+
+  def block_number(%Transaction{block: block}),
+    do: [view_module: BlockView, partial: "_link.html", block: block]
+
+  def block_number(%Reward{block: block}),
+    do: [view_module: BlockView, partial: "_link.html", block: block]
 
   def block_timestamp(%Transaction{block_number: nil, inserted_at: time}), do: time
   def block_timestamp(%Transaction{block: %Block{timestamp: time}}), do: time
@@ -55,10 +59,17 @@ defmodule BlockScoutWeb.TransactionView do
       end)
 
     transaction_with_transfers_filtered =
-      Map.put(transaction_with_transfers, :token_transfers, token_transfers_filtered_by_block_hash)
+      Map.put(
+        transaction_with_transfers,
+        :token_transfers,
+        token_transfers_filtered_by_block_hash
+      )
 
     type = Chain.transaction_token_transfer_type(transaction)
-    if type, do: {type, transaction_with_transfers_filtered}, else: {nil, transaction_with_transfers_filtered}
+
+    if type,
+      do: {type, transaction_with_transfers_filtered},
+      else: {nil, transaction_with_transfers_filtered}
   end
 
   def aggregate_token_transfers(token_transfers) do
@@ -209,9 +220,9 @@ defmodule BlockScoutWeb.TransactionView do
 
   def token_type_name(type) do
     case type do
-      :erc20 -> gettext("ERC-20 ")
-      :erc721 -> gettext("ERC-721 ")
-      :erc1155 -> gettext("ERC-1155 ")
+      :erc20 -> gettext("ZEN-20 ")
+      :erc721 -> gettext("ZEN-721 ")
+      :erc1155 -> gettext("ZEN-1155 ")
       _ -> ""
     end
   end
@@ -330,7 +341,8 @@ defmodule BlockScoutWeb.TransactionView do
 
   def get_pure_transaction_revert_reason(nil), do: nil
 
-  def get_pure_transaction_revert_reason(transaction), do: Chain.transaction_to_revert_reason(transaction)
+  def get_pure_transaction_revert_reason(transaction),
+    do: Chain.transaction_to_revert_reason(transaction)
 
   def empty_exchange_rate?(exchange_rate) do
     Token.null?(exchange_rate)
@@ -345,18 +357,29 @@ defmodule BlockScoutWeb.TransactionView do
 
   def formatted_result(status) do
     case status do
-      :pending -> gettext("Pending")
-      :awaiting_internal_transactions -> gettext("(Awaiting internal transactions for status)")
-      :success -> gettext("Success")
-      {:error, :awaiting_internal_transactions} -> gettext("Error: (Awaiting internal transactions for reason)")
+      :pending ->
+        gettext("Pending")
+
+      :awaiting_internal_transactions ->
+        gettext("(Awaiting internal transactions for status)")
+
+      :success ->
+        gettext("Success")
+
+      {:error, :awaiting_internal_transactions} ->
+        gettext("Error: (Awaiting internal transactions for reason)")
+
       # The pool of possible error reasons is unknown or even if it is enumerable, so we can't translate them
-      {:error, reason} when is_binary(reason) -> gettext("Error: %{reason}", reason: reason)
+      {:error, reason} when is_binary(reason) ->
+        gettext("Error: %{reason}", reason: reason)
     end
   end
 
   def from_or_to_address?(_token_transfer, nil), do: false
 
-  def from_or_to_address?(%{from_address_hash: from_hash, to_address_hash: to_hash}, %Address{hash: hash}) do
+  def from_or_to_address?(%{from_address_hash: from_hash, to_address_hash: to_hash}, %Address{
+        hash: hash
+      }) do
     from_hash == hash || to_hash == hash
   end
 
@@ -412,7 +435,10 @@ defmodule BlockScoutWeb.TransactionView do
   end
 
   def involves_token_transfers?(%Transaction{token_transfers: []}), do: false
-  def involves_token_transfers?(%Transaction{token_transfers: transfers}) when is_list(transfers), do: true
+
+  def involves_token_transfers?(%Transaction{token_transfers: transfers}) when is_list(transfers),
+    do: true
+
   def involves_token_transfers?(_), do: false
 
   def qr_code(%Transaction{hash: hash}) do
@@ -424,24 +450,37 @@ defmodule BlockScoutWeb.TransactionView do
 
   def status_class(transaction) do
     case Chain.transaction_to_status(transaction) do
-      :pending -> "tile-status--pending"
-      :awaiting_internal_transactions -> "tile-status--awaiting-internal-transactions"
-      :success -> "tile-status--success"
-      {:error, :awaiting_internal_transactions} -> "tile-status--error--awaiting-internal-transactions"
-      {:error, reason} when is_binary(reason) -> "tile-status--error--reason"
+      :pending ->
+        "tile-status--pending"
+
+      :awaiting_internal_transactions ->
+        "tile-status--awaiting-internal-transactions"
+
+      :success ->
+        "tile-status--success"
+
+      {:error, :awaiting_internal_transactions} ->
+        "tile-status--error--awaiting-internal-transactions"
+
+      {:error, reason} when is_binary(reason) ->
+        "tile-status--error--reason"
     end
   end
 
   # This is the address to be shown in the to field
-  def to_address_hash(%Transaction{to_address_hash: nil, created_contract_address_hash: address_hash}),
-    do: address_hash
+  def to_address_hash(%Transaction{
+        to_address_hash: nil,
+        created_contract_address_hash: address_hash
+      }),
+      do: address_hash
 
   def to_address_hash(%Transaction{to_address_hash: address_hash}), do: address_hash
 
   def transaction_display_type(%Transaction{} = transaction) do
     cond do
       involves_token_transfers?(transaction) ->
-        token_transfer_type = get_transaction_type_from_token_transfers(transaction.token_transfers)
+        token_transfer_type =
+          get_transaction_type_from_token_transfers(transaction.token_transfers)
 
         case token_transfer_type do
           @token_minting_type -> gettext(@token_minting_title)
@@ -489,7 +528,9 @@ defmodule BlockScoutWeb.TransactionView do
   defp fee_to_denomination({fee_type, fee}, opts) do
     denomination = Keyword.get(opts, :denomination)
     include_label? = Keyword.get(opts, :include_label, true)
-    {fee_type, format_wei_value(Wei.from(fee, :wei), denomination, include_unit_label: include_label?)}
+
+    {fee_type,
+     format_wei_value(Wei.from(fee, :wei), denomination, include_unit_label: include_label?)}
   end
 
   @doc """
@@ -521,13 +562,19 @@ defmodule BlockScoutWeb.TransactionView do
       end)
 
     burnings_count =
-      Enum.count(token_transfers_types, fn token_transfers_type -> token_transfers_type == @token_burning_type end)
+      Enum.count(token_transfers_types, fn token_transfers_type ->
+        token_transfers_type == @token_burning_type
+      end)
 
     mintings_count =
-      Enum.count(token_transfers_types, fn token_transfers_type -> token_transfers_type == @token_minting_type end)
+      Enum.count(token_transfers_types, fn token_transfers_type ->
+        token_transfers_type == @token_minting_type
+      end)
 
     creations_count =
-      Enum.count(token_transfers_types, fn token_transfers_type -> token_transfers_type == @token_creation_type end)
+      Enum.count(token_transfers_types, fn token_transfers_type ->
+        token_transfers_type == @token_creation_type
+      end)
 
     cond do
       Enum.count(token_transfers_types) == burnings_count -> @token_burning_type
@@ -546,7 +593,8 @@ defmodule BlockScoutWeb.TransactionView do
   end
 
   def get_max_length do
-    string_value = Application.get_env(:block_scout_web, :max_length_to_show_string_without_trimming)
+    string_value =
+      Application.get_env(:block_scout_web, :max_length_to_show_string_without_trimming)
 
     case Integer.parse(string_value) do
       {integer, ""} -> integer
@@ -555,7 +603,10 @@ defmodule BlockScoutWeb.TransactionView do
   end
 
   def trim(length, string) do
-    %{show: String.slice(string, 0..length), hide: String.slice(string, (length + 1)..String.length(string))}
+    %{
+      show: String.slice(string, 0..length),
+      hide: String.slice(string, (length + 1)..String.length(string))
+    }
   end
 
   defp template_to_string(template) when is_list(template) do
