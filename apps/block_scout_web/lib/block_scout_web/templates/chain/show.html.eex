@@ -37,7 +37,7 @@
 
             <%= if Enum.member?(market_chart_config, :price) do %>
                 <div class="dashboard-banner-chart-legend-item">
-                    <span class="dashboard-banner-chart-legend-label">
+                    <span class="dashboard-banner-chart-legend-label" style="color:white;!important">
                     <%= System.get_env("COIN_NAME") || System.get_env("COIN") %> <%= gettext "Price" %>
                     </span>
                     <div class="dashboard-banner-chart-legend-value-container">
@@ -57,7 +57,7 @@
             <% end %>
             <%= if Enum.member?(@chart_config.market, :market_cap) do %>
             <div class="dashboard-banner-chart-legend-item">
-                <span class="dashboard-banner-chart-legend-label">
+                <span class="dashboard-banner-chart-legend-label" style="color:white;!important">
                 <%= gettext "Market Cap" %>
                 </span>
                 <div>
