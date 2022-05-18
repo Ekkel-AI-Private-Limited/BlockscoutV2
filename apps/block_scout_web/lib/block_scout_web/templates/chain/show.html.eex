@@ -117,7 +117,9 @@
               <%= gettext "Total transactions" %>
             </span>
             <div class="d-flex">
-              140,000
+              <span class="dashboard-banner-network-stats-value" data-selector="transaction-count">
+                140,000 
+              </span>
               <%= if @total_gas_usage > 0 do %>
                 <span
                   data-toggle="tooltip"
@@ -143,7 +145,9 @@
             <span class="dashboard-banner-network-stats-label">
               <%= gettext "Wallet addresses" %>
             </span>
-            63,000
+            <span class="dashboard-banner-network-stats-value" data-selector="address-count">
+              63,000
+            </span>
           </div>
         </div>
       </div>
