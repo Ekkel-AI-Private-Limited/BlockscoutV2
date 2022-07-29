@@ -40,20 +40,8 @@
                     <span class="dashboard-banner-chart-legend-label" style="color:white;!important">
                     <%= System.get_env("COIN_NAME") || System.get_env("COIN") %> <%= gettext "Price" %>
                     </span>
-                    <div class="dashboard-banner-chart-legend-value-container">
-                      <span class="dashboard-banner-chart-legend-value inline" data-selector="exchange-rate" data-wei-value="<%= Explorer.Chain.Wei.from(Decimal.new(1), :ether).value %>" data-usd-exchange-rate="<%= @exchange_rate.usd_value %>">
-                      </span>
-                      <%= if @gas_price do %>
-                        <span class="dashboard-banner-chart-legend-value inline ml-2">
-                          <span class="gas-price-icon">
-                            <%= render BlockScoutWeb.IconsView, "_gas_price_icon.html" %>
-                          </span>
-                          <%= @gas_price <> " " %>
-                          <%= gettext "Gwei" %>
-                        </span>
-                      <% end %>
-                    </div>
                 </div>
+              </div>
             <% end %>
             <%= if Enum.member?(@chart_config.market, :market_cap) do %>
             <div class="dashboard-banner-chart-legend-item market-cap-per-day">
@@ -68,13 +56,14 @@
             </div>
             <% end %>
           <% end %>
+          <%= render BlockScoutWeb.ChainView, "gas_price_oracle_legend_item.html", gas_price: @gas_price %>
           <%= if Map.has_key?(@chart_config, :transactions) do %>
 
             <% transaction_chart_config = @chart_config.transactions%>
             <%= if Enum.member?(transaction_chart_config, :transactions_per_day) do %>
             <div class="dashboard-banner-chart-legend-item tx-per-day">
                 <span class="dashboard-banner-chart-legend-label">
-                    <%= gettext "Tx/day" %>
+                    <%= gettext "Daily Transactions" %>
                 </span>
                 <span class="dashboard-banner-chart-legend-value" data-selector="tx_per_day">
                     <% num_of_transactions = BlockScoutWeb.Cldr.Number.to_string!(Enum.at(@transaction_stats, 0).number_of_transactions, format: "#,###") %>
@@ -118,7 +107,7 @@
             </span>
             <div class="d-flex">
               <span class="dashboard-banner-network-stats-value">
-                140,000 
+                140,000
               </span>
               <%= if @total_gas_usage > 0 do %>
                 <span
@@ -179,7 +168,7 @@
         <div hidden data-selector="loading-message" class="col-lg-3" >
          <div data-selector="chain-block">
            <div class="tile tile-type-block n-p d-flex flex-column">
-             <a class="tile-title"><span class="tile-loader tile-label-loader"></span> </a> 
+             <a class="tile-title"><span class="tile-loader tile-label-loader"></span> </a>
              <div class="tile-bottom-contents">
                <div class="dark-block-loader"></div>
                <div class="dark-block-loader"></div>
@@ -190,7 +179,7 @@
         <div hidden data-selector="loading-message" class="col-lg-3" >
          <div data-selector="chain-block">
            <div class="tile tile-type-block n-p d-flex flex-column">
-             <a class="tile-title"><span class="tile-loader tile-label-loader"></span> </a> 
+             <a class="tile-title"><span class="tile-loader tile-label-loader"></span> </a>
              <div class="tile-bottom-contents">
                <div class="dark-block-loader"></div>
                <div class="dark-block-loader"></div>
@@ -208,7 +197,7 @@
             </div>
            </div>
          </div>
-        </div>   
+        </div>
       </div>
     </div>
   </div>

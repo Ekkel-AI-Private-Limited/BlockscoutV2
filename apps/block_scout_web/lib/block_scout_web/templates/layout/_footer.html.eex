@@ -10,14 +10,11 @@
       <div class="col-xs-12 col-lg-3">
         <p class="footer-info-text" style="color:white;">Zenith Chain is a digital peer to peer network that aims to implement a use case specific blockchain, designed to efficiently handle one single function: the transfer of assets from one party to another.</p>
         <div class="footer-social-icons">
-          <a href="https://github.com/blockscout/blockscout" rel="noreferrer" target="_blank" class="footer-social-icon" title='Github'>
+          <a href="https://github.com/Zenith-Chain" rel="noreferrer" target="_blank" class="footer-social-icon" title='Github'>
             <div class="footer-social-icon-container fontawesome-icon github"></div>
           </a>
-          <a href="https://www.twitter.com/blockscoutcom/" rel="noreferrer" target="_blank" class="footer-social-icon" title='twitter'>
+          <a href="https://twitter.com/zenithchain_co" rel="noreferrer" target="_blank" class="footer-social-icon" title='twitter'>
             <div class="footer-social-icon-container fontawesome-icon twitter"></div>
-          </a>
-          <a href="https://t.me/poa_network" rel="noreferrer" target="_blank" class="footer-social-icon" title='Telegram'>
-            <div class="footer-social-icon-container fontawesome-icon telegram"></div>
           </a>
         </div>
       </div>
@@ -25,6 +22,7 @@
       <div class="col-xs-12 col-md-4 col-lg-3 footer-list">
         <h3>Products</h3>
         <ul>
+          <li><a href="https://www.fuzionx.io/en_US/" rel="noreferrer" class="footer-link" target="_blank">FuzionX</a></li>
           <li><a href="https://ico.zenithchain.co/" rel="noreferrer" class="footer-link" target="_blank">Zenith Coin</a></li>
           <li><a href="https://www.zenithchain.co/comingsoon" rel="noreferrer" target="_blank" class="footer-link">Zenith Pay</a></li>
           <li><a href="https://www.zenithchain.co/comingsoon" rel="noreferrer" class="footer-link">Zenith Exchange</a></li>
